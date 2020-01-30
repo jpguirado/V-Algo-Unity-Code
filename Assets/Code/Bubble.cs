@@ -26,6 +26,9 @@ public class Bubble : MonoBehaviour
     //Lista con los GameObject que hacen referencia a la representación gráfica de cada uno de los elementos del array
     public List<GameObject> ArrayListGraphic;
 
+    //Determina si la ejecución esta parada o no
+    public bool pausado;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -92,17 +95,19 @@ public class Bubble : MonoBehaviour
 
     private IEnumerator debug()
     {
-
         Text code = Debug.GetComponent<Text>();
-        //code.text = "<b>for (int i = 1; i < array.Length; i++)\r\n            for (int p = array.Length - 1; p >= i; p--)\r\n            {\r\n                if (array[p-1] > array[p])\r\n                {\r\n                    aux = array[p - 1];\r\n                    array[p - 1] = array[p];\r\n                    array[p] = aux;\r\n                }\r\n            </b>}";
         int aux;
         float auxPosition;
         GameObject auxGameObject;
         for (int i = 1; i < array.Length; i++)
             for (int p = array.Length - 1; p >= i; p--)
             {
+                //Esperamos si se ha presionado el boton de pausa
+                yield return new WaitWhile(() => pausado==true);
+
                 if (array[p - 1] > array[p])
                 {
+                    //Guardamos en auxiliar
                     aux = array[p - 1];
                     auxPosition = ArrayListGraphic[p - 1].transform.position.x;
                     auxGameObject = ArrayListGraphic[p - 1];
@@ -110,21 +115,55 @@ public class Bubble : MonoBehaviour
                     yield return new WaitForSeconds(segundosParada);
                     code.text = code.text.Replace("<b>aux = array[p - 1];</b>", "aux = array[p - 1];");
 
-                    array[p - 1] = array[p];
-                    ArrayListGraphic[p - 1].transform.position = new Vector3(ArrayListGraphic[p].transform.position.x, ArrayListGraphic[p - 1].transform.position.y, ArrayListGraphic[p - 1].transform.position.z);
-                    ArrayListGraphic[p - 1] = ArrayListGraphic[p];
+
+                    //El tiempo de movimiento de los elementos debe ser menor al de la parada para que todo funcione ok
+                    //Realizamos el movimiento entre ambos elementos antes de hacer las asignaciones lógicas
+                    StartCoroutine(MoveToPosition(ArrayListGraphic[p - 1], ArrayListGraphic[p], segundosParada * 0.9f));
+                    StartCoroutine(MoveToPosition(ArrayListGraphic[p], ArrayListGraphic[p - 1], segundosParada * 0.9f));
+
+
+                    //Cambiamos anterior por el siguiente
                     code.text = code.text.Replace("array[p - 1] = array[p];", "<b>array[p - 1] = array[p];</b>");
                     yield return new WaitForSeconds(segundosParada);
                     code.text = code.text.Replace("<b>array[p - 1] = array[p];</b>", "array[p - 1] = array[p];");
+                    array[p - 1] = array[p];
+                    ArrayListGraphic[p - 1] = ArrayListGraphic[p];
 
+                    
+                    //Cambiamos el siguiente por el anterior
                     array[p] = aux;
-                    ArrayListGraphic[p].transform.position = new Vector3(auxPosition, ArrayListGraphic[p].transform.position.y, ArrayListGraphic[p].transform.position.z);
                     ArrayListGraphic[p] = auxGameObject;
                     code.text = code.text.Replace("array[p] = aux;", "<b>array[p] = aux;</b>");
                     yield return new WaitForSeconds(segundosParada);
                     code.text = code.text.Replace("<b>array[p] = aux;</b>", "array[p] = aux;");
                 }
             }
-        print("acaba");
+    }
+
+    //Función que permite animar las permutaciones del array
+    private IEnumerator MoveToPosition(GameObject objetoInicial, GameObject objetoFinal, float timeToMove)
+    {
+        float time = 0f;
+        Vector3 posicionInicial = objetoInicial.transform.position;
+        Vector3 posicionFinal = objetoFinal.transform.position;
+
+        while(time < 1)
+        {
+            time += Time.deltaTime / timeToMove;
+            objetoInicial.transform.position = Vector3.Lerp(posicionInicial, posicionFinal, time);
+            yield return null;
+        }
+    }
+
+    //Para la ejecución
+    public void pauseExecution()
+    {
+        pausado = true;
+    }
+
+    //Reanuda la ejecución
+    public void playExecution()
+    {
+        pausado = false;
     }
 }
