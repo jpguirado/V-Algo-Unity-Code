@@ -482,7 +482,7 @@ GameObject:
   - component: {fileID: 461317423}
   - component: {fileID: 461317422}
   m_Layer: 5
-  m_Name: Inicio
+  m_Name: Boton Inicio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -550,7 +550,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 461317423}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1397440672}
+        m_MethodName: RestartExecution
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &461317423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,7 +771,7 @@ GameObject:
   - component: {fileID: 980880964}
   - component: {fileID: 980880963}
   m_Layer: 5
-  m_Name: Paso atras
+  m_Name: Boton Final
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -828,7 +839,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 980880964}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1397440672}
+        m_MethodName: EndExecution
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &980880964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -865,6 +887,83 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 980880961}
   m_CullTransparentMesh: 0
+--- !u!1 &983978649
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 983978652}
+  - component: {fileID: 983978651}
+  - component: {fileID: 983978650}
+  m_Layer: 5
+  m_Name: "N\xFAmero de paso"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &983978650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 983978649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 40
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Paso 250/250
+--- !u!222 &983978651
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 983978649}
+  m_CullTransparentMesh: 0
+--- !u!224 &983978652
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 983978649}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1397440671}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 329.5, y: 133.7}
+  m_SizeDelta: {x: 149, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1060574254
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,7 +1252,7 @@ GameObject:
   - component: {fileID: 1152162299}
   - component: {fileID: 1152162298}
   m_Layer: 5
-  m_Name: Paso atras
+  m_Name: ' Boton Paso atras'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1509,6 +1608,7 @@ RectTransform:
   - {fileID: 1567541054}
   - {fileID: 1789646509}
   - {fileID: 689034912}
+  - {fileID: 983978652}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1530,7 +1630,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numElementos: 15
-  segundosParada: 1.5
+  segundosParada: 1
   ElementoGraficoArray: {fileID: 5780988925402579041, guid: 7decc41e592e4494586f13a35997a770,
     type: 3}
   ArrayListGraphic: []
@@ -1538,8 +1638,13 @@ MonoBehaviour:
   ContadorPaso: 0
   BotonStepOver: {fileID: 2140597794}
   BotonStepBack: {fileID: 1152162298}
+  BotonInicio: {fileID: 461317422}
   Code: {fileID: 2094056000}
   EstadoEjecucion: {fileID: 689034910}
+  NumeroPaso: {fileID: 983978650}
+  "ColorOriginalElementosGr\xE1ficos": {r: 0.23529412, g: 0.5529412, b: 0.5921569,
+    a: 1}
+  ColorResalteElementosGraficos: {r: 0.101960786, g: 0.33333334, b: 0.36078432, a: 1}
 --- !u!1 &1502457177
 GameObject:
   m_ObjectHideFlags: 0
@@ -1900,7 +2005,7 @@ GameObject:
   - component: {fileID: 2140597795}
   - component: {fileID: 2140597794}
   m_Layer: 5
-  m_Name: Paso adelante
+  m_Name: Boton paso adelante
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

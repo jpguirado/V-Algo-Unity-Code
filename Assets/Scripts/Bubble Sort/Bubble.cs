@@ -12,7 +12,10 @@ public class Bubble : MonoBehaviour
     public int numElementos;
 
     //Array a ordenar
-    int[] array;
+    int[] arrayOriginal;
+
+    //Array a ordenar
+    int[] arrayOrdenado;
 
     //Tiempo de parada entre cada paso de la ejecución.
     public float segundosParada;
@@ -27,7 +30,7 @@ public class Bubble : MonoBehaviour
     public bool pausado;
 
     //Lista de estados para controlar la ejecución paso por paso
-    public List<State> listaEstados;
+    public List<BubbleState> listaEstados;
 
     //Indica el paso en el que nos encontramos
     public int ContadorPaso;
@@ -44,54 +47,67 @@ public class Bubble : MonoBehaviour
     //Boton de StepOver
     public Button BotonStepBack;
 
+    //Boton de StepOver
+    public Button BotonInicio;
+
     //Indica si esta ejecutando un paso
     private bool ejecutandoPaso;
 
+    //Elemento texto con el código
     public Text Code;
 
     //Dice si esta en play o pausa
     public Text EstadoEjecucion;
+
+    //Indica en la pantalla el número de paso
+    public Text NumeroPaso;
+
+    //Color original de los elementos gráficos del array
+    public Color ColorOriginalElementosGráficos;
+
+    //Color de resalte de los elementos gráficos del array
+    public Color ColorResalteElementosGraficos;
 
     // Start is called before the first frame update
     void Start()
     {
         parado = true;
         ContadorPaso = 0;
-        listaEstados = new List<State>();
+        listaEstados = new List<BubbleState>();
         ejecutandoPaso = false;
 
-        array = CreateRandomArray(numElementos);
-        ExecuteAndCreateStates(array);
-        InstantiateGraphicArray(array);
+        arrayOriginal = CreateRandomArray(numElementos);
+        ExecuteAndCreateStates(arrayOriginal);
+        InstantiateGraphicArray(arrayOriginal);
         //StartCoroutine(debug());
     }
 
     private void ExecuteAndCreateStates(int[] array)
     {
-        int[] arrayAux = (int[])array.Clone();
+        arrayOrdenado = (int[])array.Clone();
         int aux;
-        for (int i = 1; i < arrayAux.Length; i++)
-            for (int p = arrayAux.Length - 1; p >= i; p--)
+        for (int i = 1; i < arrayOrdenado.Length; i++)
+            for (int p = arrayOrdenado.Length - 1; p >= i; p--)
             {
                 //Crear estado de if
-                listaEstados.Add(new State()
+                listaEstados.Add(new BubbleState()
                 {
                     Estado = 0,
                     IndiceElementoIzq = p - 1,
                     IndiceElementoDcha = p
                 });
-                if (arrayAux[p - 1] > arrayAux[p])
+                if (arrayOrdenado[p - 1] > arrayOrdenado[p])
                 {
                     //Crear estado de swap
-                    listaEstados.Add(new State()
+                    listaEstados.Add(new BubbleState()
                     {
                         Estado = 1,
                         IndiceElementoIzq = p - 1,
                         IndiceElementoDcha = p
                     });
-                    aux = arrayAux[p - 1];
-                    arrayAux[p - 1] = arrayAux[p];
-                    arrayAux[p] = aux;
+                    aux = arrayOrdenado[p - 1];
+                    arrayOrdenado[p - 1] = arrayOrdenado[p];
+                    arrayOrdenado[p] = aux;
                 }
             }
     }
@@ -116,8 +132,9 @@ public class Bubble : MonoBehaviour
             //Establecer el número correspondiente
             instanciado.GetComponentInChildren<Text>().text = array[i].ToString();
 
-            //Cambiar la altura de la barra a un tamaño proporcional a su número
+            //Cambiar la altura de la barra a un tamaño proporcional a su número y establecer su color
             RectTransform tamañoBarra = instanciado.transform.Find("Barra").GetComponent<RectTransform>();
+            instanciado.transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
             tamañoBarra.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
 
             //Ajustar la altura de la barra debido a que el cambio de tamaño lo hace hacia arriba y abajo
@@ -150,8 +167,11 @@ public class Bubble : MonoBehaviour
     void Update()
     {
         GameObject auxGameObject;
-        
 
+        NumeroPaso.text = "Paso " + ContadorPaso + "/" + (listaEstados.Count - 1);
+
+        
+        //Modo automatico
         if (!pausado && parado && ContadorPaso <= (listaEstados.Count - 1))
         {
             limpiarResalteCodigo();
@@ -192,7 +212,7 @@ public class Bubble : MonoBehaviour
                 {
                     ejecutandoPaso = true;
 
-                    print("Vamonos atomos");
+                    print("Debug");
 
                     limpiarResalteCodigo();
 
@@ -206,12 +226,16 @@ public class Bubble : MonoBehaviour
                         Code.text = Code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
                         Code.text = Code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
 
+                        //Resaltar elementos graficos array
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+
                         //Movemos los elementos
                         StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], segundosParada * 0.5f));
                         StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
 
                         //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                        StartCoroutine(WaitTimeSwapStep(0));
+                        StartCoroutine(WaitTimeSwapStep(segundosParada));
 
                         //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
                         auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
@@ -223,6 +247,11 @@ public class Bubble : MonoBehaviour
                     {
                         //Ponemos en negrita la parte de codigo que estamos ejecutando
                         Code.text = Code.text.Replace("if array[p-1] > array[p]:", "<b>if array[p-1] > array[p]:</b>");
+
+                        //Resaltar elementos graficos array
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+
                         //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
                         StartCoroutine(WaitTimeIfStep(0));
                     }
@@ -240,8 +269,6 @@ public class Bubble : MonoBehaviour
 
                     ContadorPaso -= 1;
 
-                    print("Vamonos atomos");
-
                     limpiarResalteCodigo();
 
                     //Reproducir los estados
@@ -254,12 +281,16 @@ public class Bubble : MonoBehaviour
                         Code.text = Code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
                         Code.text = Code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
 
+                        //Resaltar elementos graficos array
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+
                         //Movemos los elementos
                         StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], segundosParada * 0.5f));
                         StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
 
                         //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                        StartCoroutine(WaitTimeSwapStep(0));
+                        StartCoroutine(WaitTimeSwapStep(segundosParada));
 
                         //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
                         auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
@@ -271,6 +302,11 @@ public class Bubble : MonoBehaviour
                     {
                         //Ponemos en negrita la parte de codigo que estamos ejecutando
                         Code.text = Code.text.Replace("if array[p-1] > array[p]:", "<b>if array[p-1] > array[p]:</b>");
+
+                        //Resaltar elementos graficos array
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                        ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+
                         //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
                         StartCoroutine(WaitTimeIfStep(0));
                     }
@@ -288,53 +324,14 @@ public class Bubble : MonoBehaviour
 
         //If
         Code.text = Code.text.Replace("<b>if array[p-1] > array[p]:</b>", "if array[p-1] > array[p]:");
+
+        //Reestablecemos el color de las barras
+        for (int i = 0; i < ArrayListGraphic.Count; i++)
+        {
+            ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        }
+
     }
-
-    //private IEnumerator debug()
-    //{
-    //    int aux;
-    //    float auxPosition;
-    //    GameObject auxGameObject;
-    //    for (int i = 1; i < array.Length; i++)
-    //        for (int p = array.Length - 1; p >= i; p--)
-    //        {
-    //            //Esperamos si se ha presionado el boton de pausa
-    //            yield return new WaitWhile(() => pausado==true);
-
-    //            if (array[p - 1] > array[p])
-    //            {
-    //                //Guardamos en auxiliar
-    //                aux = array[p - 1];
-    //                auxPosition = ArrayListGraphic[p - 1].transform.position.x;
-    //                auxGameObject = ArrayListGraphic[p - 1];
-    //                code.text = code.text.Replace("aux = array[p-1]", "<b>aux = array[p-1]</b>");
-    //                yield return new WaitForSeconds(segundosParada);
-    //                code.text = code.text.Replace("<b>aux = array[p-1]</b>", "aux = array[p-1]");
-
-
-    //                //El tiempo de movimiento de los elementos debe ser menor al de la parada para que todo funcione ok
-    //                //Realizamos el movimiento entre ambos elementos antes de hacer las asignaciones lógicas
-    //                StartCoroutine(MoveToPosition(ArrayListGraphic[p - 1], ArrayListGraphic[p], segundosParada * 0.9f));
-    //                StartCoroutine(MoveToPosition(ArrayListGraphic[p], ArrayListGraphic[p - 1], segundosParada * 0.9f));
-
-
-    //                //Cambiamos anterior por el siguiente
-    //                code.text = code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
-    //                yield return new WaitForSeconds(segundosParada);
-    //                code.text = code.text.Replace("<b>array[p-1] = array[p]</b>", "array[p-1] = array[p]");
-    //                array[p - 1] = array[p];
-    //                ArrayListGraphic[p - 1] = ArrayListGraphic[p];
-
-                    
-    //                //Cambiamos el siguiente por el anterior
-    //                array[p] = aux;
-    //                ArrayListGraphic[p] = auxGameObject;
-    //                code.text = code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
-    //                yield return new WaitForSeconds(segundosParada);
-    //                code.text = code.text.Replace("<b>array[p] = aux</b>", "array[p] = aux");
-    //            }
-    //        }
-    //}
 
     //Función que permite animar las permutaciones del array
     private IEnumerator MoveToPosition(GameObject objetoInicial, GameObject objetoFinal, float timeToMove)
@@ -355,10 +352,17 @@ public class Bubble : MonoBehaviour
     private IEnumerator WaitTimeSwap(float tiempoEspera)
     {
         parado = false;
+
+        int paso = ContadorPaso;
+
         //Ponemos en negrita la parte de codigo que estamos ejecutando
         Code.text = Code.text.Replace("aux = array[p-1]", "<b>aux = array[p-1]</b>");
         Code.text = Code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
         Code.text = Code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
+
+        //Resaltar elementos graficos array
+        ArrayListGraphic[listaEstados[paso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+        ArrayListGraphic[listaEstados[paso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
 
         yield return new WaitForSeconds(tiempoEspera);
 
@@ -366,6 +370,10 @@ public class Bubble : MonoBehaviour
         Code.text = Code.text.Replace("<b>aux = array[p-1]</b>", "aux = array[p-1]");
         Code.text = Code.text.Replace("<b>array[p-1] = array[p]</b>", "array[p-1] = array[p]");
         Code.text = Code.text.Replace("<b>array[p] = aux</b>", "array[p] = aux");
+
+        //Quitar resalte elementos graficos array
+        ArrayListGraphic[listaEstados[paso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        ArrayListGraphic[listaEstados[paso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
 
         parado = true;
         ejecutandoPaso = false;
@@ -376,13 +384,23 @@ public class Bubble : MonoBehaviour
     {
         parado = false;
 
+        int paso = ContadorPaso;
+
         //Ponemos en negrita la parte de codigo que estamos ejecutando
         Code.text = Code.text.Replace("if array[p-1] > array[p]:", "<b>if array[p-1] > array[p]:</b>");
+
+        //Resaltar elementos graficos array
+        ArrayListGraphic[listaEstados[paso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+        ArrayListGraphic[listaEstados[paso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
 
         yield return new WaitForSeconds(tiempoEspera);
 
         //Quitamos la negrita a la parte que estamos ejecutando
         Code.text = Code.text.Replace("<b>if array[p-1] > array[p]:</b>", "if array[p-1] > array[p]:");
+
+        //Quitar resalte elementos graficos array
+        ArrayListGraphic[listaEstados[paso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        ArrayListGraphic[listaEstados[paso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
 
         parado = true;
         ejecutandoPaso = false;
@@ -418,5 +436,43 @@ public class Bubble : MonoBehaviour
     {
         pausado = false;
         EstadoEjecucion.text = "Play";
+    }
+
+    //Reinicia la ejecución
+    public void RestartExecution()
+    {
+        pausado = true;
+        EstadoEjecucion.text = "Pausa";
+
+        ContadorPaso = 0;
+
+        //Eliminamos los objetos vacios
+        for (int i = 0; i < ArrayListGraphic.Count; i++)
+        {
+            Destroy(ArrayListGraphic[i]);
+        }
+
+        //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
+        ArrayListGraphic.Clear();
+        InstantiateGraphicArray(arrayOriginal);
+    }
+
+    //End execution
+    public void EndExecution()
+    {
+        pausado = true;
+        EstadoEjecucion.text = "Pausa";
+
+        ContadorPaso = listaEstados.Count - 1;
+
+        //Eliminamos los objetos vacios
+        for (int i = 0; i < ArrayListGraphic.Count; i++)
+        {
+            Destroy(ArrayListGraphic[i]);
+        }
+
+        //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
+        ArrayListGraphic.Clear();
+        InstantiateGraphicArray(arrayOrdenado);
     }
 }
