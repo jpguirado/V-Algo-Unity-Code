@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using TMPro;
 
 public class Bubble : MonoBehaviour
 {
@@ -75,7 +76,7 @@ public class Bubble : MonoBehaviour
     public Text Code;
 
     //Indica en la pantalla el número de paso
-    public Text NumeroPaso;
+    public TextMeshProUGUI NumeroPaso;
 
     //Color original de los elementos gráficos del array
     public Color ColorOriginalElementosGráficos;
@@ -85,6 +86,12 @@ public class Bubble : MonoBehaviour
 
     public Image ImagenPlayPausa;
 
+    //Si esta true, engordamos las barras, si esta false dejamos mas espacio a los lados
+    public bool engordarBarras;
+
+    //Distancia entre elementos
+    public float distanceBetweenElements;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -92,6 +99,14 @@ public class Bubble : MonoBehaviour
         ContadorPaso = 0;
         listaEstados = new List<BubbleState>();
         ejecutandoPaso = false;
+
+        numElementos = MenuConfiguracion.NumElementos;
+
+        //Si arrancamos directamente la escena, esto habra que eliminarlo en build final
+        if (numElementos == 0)
+        {
+            numElementos = 10;
+        }
 
         arrayOriginal = CreateRandomArray(numElementos);
         ExecuteAndCreateStates(arrayOriginal);
@@ -131,35 +146,84 @@ public class Bubble : MonoBehaviour
 
     private void InstantiateGraphicArray(int[] array, Vector3 escalaActual)
     {
-        //Necesitamos obtener el ancho del canvas
-        Vector2 CanvasResolution = this.GetComponent<CanvasScaler>().referenceResolution;
-
-        //Distancia entre los elementos del array en funcion del ancho del canvas y el número de elementos
-        float distanceBetweenElements = (CanvasResolution.x - (CanvasResolution.x / 10)) / (array.Length - 1);
-
-        for (int i = 0; i<array.Length; i++)
+        if (engordarBarras)
         {
-            //Instanciamos, cambiamos nombre, añadimos a la lista de GameObject, ponemos como padre el canvas y establecemos su posición.
-            GameObject instanciado = Instantiate(ElementoGraficoArray);
-            instanciado.name = array[i].ToString();
-            ArrayListGraphic.Add(instanciado);
-            instanciado.transform.SetParent(this.transform);
-            Vector3 posicion = instanciado.GetComponent<RectTransform>().localPosition = new Vector3(distanceBetweenElements*i - (CanvasResolution.x/2) + (CanvasResolution.x/2/10), 0.0f, 0.0f);
+            //Necesitamos obtener el ancho del canvas
+            Vector2 CanvasResolution = this.GetComponent<CanvasScaler>().referenceResolution;
 
-            //Restauramos la escala original si existia
-            if(escalaActual != Vector3.zero) 
-                instanciado.transform.localScale = escalaActual;
+            //Distancia entre los elementos del array en funcion del ancho del canvas y el número de elementos
+            distanceBetweenElements = (CanvasResolution.x - (CanvasResolution.x / 10)) / (array.Length - 1);
 
-            //Establecer el número correspondiente
-            instanciado.GetComponentInChildren<Text>().text = array[i].ToString();
+            for (int i = 0; i < array.Length; i++)
+            {
+                //Instanciamos, cambiamos nombre, añadimos a la lista de GameObject, ponemos como padre el canvas y establecemos su posición.
+                GameObject instanciado = Instantiate(ElementoGraficoArray);
+                instanciado.name = array[i].ToString();
+                ArrayListGraphic.Add(instanciado);
+                instanciado.transform.SetParent(this.transform);
+                Vector3 posicion = instanciado.GetComponent<RectTransform>().localPosition = new Vector3(distanceBetweenElements * i - (CanvasResolution.x / 2) + (CanvasResolution.x / 2 / 10), 0.0f, 0.0f);
 
-            //Cambiar la altura de la barra a un tamaño proporcional a su número y establecer su color
-            RectTransform tamañoBarra = instanciado.transform.Find("Barra").GetComponent<RectTransform>();
-            instanciado.transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
-            tamañoBarra.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
+                //Restauramos la escala original si existia
+                if (escalaActual != Vector3.zero)
+                    instanciado.transform.localScale = escalaActual;
 
-            //Ajustar la altura de la barra debido a que el cambio de tamaño lo hace hacia arriba y abajo
-            tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y)/2), tamañoBarra.localPosition.z);
+                //Establecer el número correspondiente
+                instanciado.GetComponentInChildren<TextMeshProUGUI>().text = array[i].ToString();
+
+                //Array que dice el ancho de las barras en funcion del número de elementos seleccionados
+                int[] arrayWidth = new int[] { 80, 76, 72, 68, 64, 60, 56, 52, 48, 44, 40 };
+
+                //Cambiar la altura de la barra a un tamaño proporcional a su número y establecer su color
+                RectTransform tamañoBarra = instanciado.transform.Find("Barra").GetComponent<RectTransform>();
+                instanciado.transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                tamañoBarra.sizeDelta = new Vector2(arrayWidth[numElementos - 10], array[i] * (90 / (array.Length - 1)) + 10);
+
+                //Ajustar la altura de la barra debido a que el cambio de tamaño lo hace hacia arriba y abajo
+                tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y) / 2), tamañoBarra.localPosition.z);
+            }
+        }
+        else
+        {
+            //Necesitamos obtener el ancho del canvas
+            Vector2 CanvasResolution = this.GetComponent<CanvasScaler>().referenceResolution;
+
+            //Distancia entre los elementos del array en funcion del ancho del canvas y el número de elementos
+            //float distanceBetweenElements = (CanvasResolution.x - (CanvasResolution.x / 10)) / (array.Length - 1);
+
+
+            int[] arrayDistanciaElementos = new int[] { 40, 37, 34, 31, 28, 25, 22, 19, 16, 13, 10 };
+
+            distanceBetweenElements = arrayDistanciaElementos[numElementos-10];
+
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                //Instanciamos, cambiamos nombre, añadimos a la lista de GameObject, ponemos como padre el canvas y establecemos su posición.
+                GameObject instanciado = Instantiate(ElementoGraficoArray);
+                instanciado.name = array[i].ToString();
+                ArrayListGraphic.Add(instanciado);
+                instanciado.transform.SetParent(this.transform);
+                float posicionX = (numElementos * 80 + (numElementos - 1) * distanceBetweenElements) / 2;
+                Vector3 posicion = instanciado.GetComponent<RectTransform>().localPosition = new Vector3(-posicionX + i * (40 * 2 + distanceBetweenElements) + 40, 0.0f, 0.0f);
+
+                //Restauramos la escala original si existia
+                if (escalaActual != Vector3.zero)
+                    instanciado.transform.localScale = escalaActual;
+
+                //Establecer el número correspondiente
+                instanciado.GetComponentInChildren<TextMeshProUGUI>().text = array[i].ToString();
+
+                //Array que dice el ancho de las barras en funcion del número de elementos seleccionados
+                int[] arrayWidth = new int[] { 80, 76, 72, 68, 64, 60, 56, 52, 48, 44, 40 };
+
+                //Cambiar la altura de la barra a un tamaño proporcional a su número y establecer su color
+                RectTransform tamañoBarra = instanciado.transform.Find("Barra").GetComponent<RectTransform>();
+                instanciado.transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                tamañoBarra.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
+
+                //Ajustar la altura de la barra debido a que el cambio de tamaño lo hace hacia arriba y abajo
+                tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y) / 2), tamañoBarra.localPosition.z);
+            }
         }
     }
 
@@ -529,5 +593,10 @@ public class Bubble : MonoBehaviour
         //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
         ArrayListGraphic.Clear();
         InstantiateGraphicArray(arrayOrdenado,escalaActual);
+    }
+
+    public void VolverAlMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
     }
 }
