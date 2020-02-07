@@ -39,9 +39,6 @@ public class Bubble : MonoBehaviour
     //Indica si se esta realizando movimiento entre elementos
     private bool parado;
 
-    //Indica si hay que realizar un paso hacia delante
-    private bool StepOver;
-
     //Sprite play
     public Sprite SpritePlay;
 
@@ -92,14 +89,22 @@ public class Bubble : MonoBehaviour
     //Distancia entre elementos
     public float distanceBetweenElements;
 
+    //Speed Slider
+    public Slider SliderVelocidad;
+
+    public BubbleLanguageManager BubbleLanguageManager;
+
     // Start is called before the first frame update
     void Start()
     {
+        //Set the language
+        BubbleLanguageManager.SetLanguage();
+
+        //Establecemos variables
         parado = true;
         ContadorPaso = 0;
         listaEstados = new List<BubbleState>();
         ejecutandoPaso = false;
-
         numElementos = MenuConfiguracion.NumElementos;
 
         //Si arrancamos directamente la escena, esto habra que eliminarlo en build final
@@ -111,9 +116,9 @@ public class Bubble : MonoBehaviour
         arrayOriginal = CreateRandomArray(numElementos);
         ExecuteAndCreateStates(arrayOriginal);
         InstantiateGraphicArray(arrayOriginal,Vector3.zero);
-        //StartCoroutine(debug());
     }
 
+    //Ejecuta el algoritmo y crea los estados necesarios para su reproducción por pasos
     private void ExecuteAndCreateStates(int[] array)
     {
         arrayOrdenado = (int[])array.Clone();
@@ -144,8 +149,10 @@ public class Bubble : MonoBehaviour
             }
     }
 
+    //Instancia los elementos gráficos que representan al array y los mete en una lista de GameObject
     private void InstantiateGraphicArray(int[] array, Vector3 escalaActual)
     {
+        //Solución que hace las barras más anchas cuantos menos elementos haya, para ocupar siempre toda la pantalla
         if (engordarBarras)
         {
             //Necesitamos obtener el ancho del canvas
@@ -184,17 +191,9 @@ public class Bubble : MonoBehaviour
         }
         else
         {
-            //Necesitamos obtener el ancho del canvas
-            Vector2 CanvasResolution = this.GetComponent<CanvasScaler>().referenceResolution;
-
-            //Distancia entre los elementos del array en funcion del ancho del canvas y el número de elementos
-            //float distanceBetweenElements = (CanvasResolution.x - (CanvasResolution.x / 10)) / (array.Length - 1);
-
-
+            //Array con distancia entre elementos en funcion del número que seleccione el usuario para aprovechar más la pantalla
             int[] arrayDistanciaElementos = new int[] { 40, 37, 34, 31, 28, 25, 22, 19, 16, 13, 10 };
-
             distanceBetweenElements = arrayDistanciaElementos[numElementos-10];
-
 
             for (int i = 0; i < array.Length; i++)
             {
@@ -251,10 +250,16 @@ public class Bubble : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Text of the step
+        if(PlayerPrefs.GetString("language") == "ESPAÑOL")
+            NumeroPaso.text =  "Paso: " + ContadorPaso + "/" + listaEstados.Count;
+        else
+            NumeroPaso.text = "Step: " + ContadorPaso + "/" + listaEstados.Count;
+
+        //Get the speed
+        segundosParada = SliderVelocidad.value;
+
         GameObject auxGameObject;
-
-        NumeroPaso.text = "Paso " + ContadorPaso + "/" + listaEstados.Count;
-
         
         //Modo automatico
         if (!pausado && parado && ContadorPaso <= (listaEstados.Count - 1))
@@ -412,6 +417,7 @@ public class Bubble : MonoBehaviour
         }
     }
 
+    //Funcion que limpia todos los resaltes, tanto de código como de elementos gráficos del array
     private void limpiarResalteCodigo()
     {
         //Swap
@@ -422,6 +428,7 @@ public class Bubble : MonoBehaviour
         //If
         Code.text = Code.text.Replace("<b>if array[p-1] > array[p]:</b>", "if array[p-1] > array[p]:");
 
+        //Codigo limpio sin resaltes
         ImagenCodigo.sprite = SpriteImagenCodigoLimpia;
 
         //Reestablecemos el color de las barras
@@ -492,6 +499,7 @@ public class Bubble : MonoBehaviour
         //Ponemos en negrita la parte de codigo que estamos ejecutando
         Code.text = Code.text.Replace("if array[p-1] > array[p]:", "<b>if array[p-1] > array[p]:</b>");
 
+        //Resalta imagen codigo
         ImagenCodigo.sprite = SpriteImagenCodigoIf;
 
         //Resaltar elementos graficos array
@@ -513,7 +521,7 @@ public class Bubble : MonoBehaviour
         ejecutandoPaso = false;
     }
 
-    //Funcion que espera tiempo determinado y resalta la parte del swap de elementos
+    //Funcion que espera tiempo determinado y resalta la parte del swap de elementos cuando la ejecución va paso por paso
     private IEnumerator WaitTimeSwapStep(float tiempoEspera)
     {
         parado = false;
@@ -522,7 +530,7 @@ public class Bubble : MonoBehaviour
         ejecutandoPaso = false;
     }
 
-    //Funcion que espera tiempo determinado y resalta la parte del if
+    //Funcion que espera tiempo determinado y resalta la parte del if cuando la ejecución va paso por paso
     private IEnumerator WaitTimeIfStep(float tiempoEspera)
     {
         parado = false;
@@ -573,7 +581,7 @@ public class Bubble : MonoBehaviour
         InstantiateGraphicArray(arrayOriginal, escalaActual);
     }
 
-    //End execution
+    //Termina la ejecución
     public void EndExecution()
     {
         pausado = true;
@@ -595,8 +603,24 @@ public class Bubble : MonoBehaviour
         InstantiateGraphicArray(arrayOrdenado,escalaActual);
     }
 
+    //Vuelve al menu cargando la escena
     public void VolverAlMenu()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
     }
+}
+
+//Clase para almacenar los estados necesarios para controlar la reproducción del código
+public class BubbleState
+{
+    //Determina si se esta ejecutando el if o el swap
+    //0 para el if, 1 para el swap
+    public int Estado { get; set; }
+
+    //Elemento izquierda
+    public int IndiceElementoIzq { get; set; }
+
+    //Elemento derecha
+    public int IndiceElementoDcha { get; set; }
+
 }

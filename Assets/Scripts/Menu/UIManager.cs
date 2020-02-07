@@ -5,7 +5,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
 
-    public GameObject MenuConfiguracionEjecucion, MainMenu;
+    public GameObject MenuConfiguracionEjecucion, MainMenu, MenuSettings;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +28,13 @@ public class UIManager : MonoBehaviour
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "Burbuja";
     }
 
+    //Click en el boton de algoritmo de la burbuja
+    public void OnClickSettings()
+    {
+        MainMenu.SetActive(false);
+        MenuSettings.SetActive(true);
+    }
+
     //Carga la escena del menu
     public void CargarMenu()
     {
@@ -42,6 +49,9 @@ public class UIManager : MonoBehaviour
             //Procedemos del menú de configuracion de ejecucion
             case 0:
                 MenuConfiguracionEjecucion.SetActive(false);
+                break;
+            case 1:
+                MenuSettings.SetActive(false);
                 break;
         }
         MainMenu.SetActive(true);
