@@ -700,7 +700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.101960786, g: 0.33333334, b: 0.36078432, a: 1}
+  m_Color: {r: 0.23529413, g: 0.5529412, b: 0.5921569, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1761,7 +1761,7 @@ MonoBehaviour:
   NumeroPaso: {fileID: 1498505162}
   "ColorOriginalElementosGr\xE1ficos": {r: 0.23529412, g: 0.5529412, b: 0.5921569,
     a: 1}
-  ColorResalteElementosGraficos: {r: 0.101960786, g: 0.33333334, b: 0.36078432, a: 1}
+  ColorResalteElementosGraficos: {r: 0.13710396, g: 0.67627, b: 0.745283, a: 1}
   ImagenPlayPausa: {fileID: 7681590}
   engordarBarras: 0
   distanceBetweenElements: 40
@@ -2582,7 +2582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.23529413, g: 0.5529412, b: 0.5921569, a: 1}
+  m_Color: {r: 0.13725491, g: 0.6745098, b: 0.74509805, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
