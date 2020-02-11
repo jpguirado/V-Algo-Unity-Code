@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Burbuja.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/MergeSort.unity
+    guid: 007591616f2349248b0a20317e67c848
   m_configObjects: {}

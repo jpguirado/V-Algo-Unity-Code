@@ -186,7 +186,7 @@ public class Bubble : MonoBehaviour
                 tamañoBarra.sizeDelta = new Vector2(arrayWidth[numElementos - 10], array[i] * (90 / (array.Length - 1)) + 10);
 
                 //Ajustar la altura de la barra debido a que el cambio de tamaño lo hace hacia arriba y abajo
-                tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y) / 2), tamañoBarra.localPosition.z);
+                //tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y) / 2), tamañoBarra.localPosition.z);
             }
         }
         else
@@ -221,7 +221,7 @@ public class Bubble : MonoBehaviour
                 tamañoBarra.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
 
                 //Ajustar la altura de la barra debido a que el cambio de tamaño lo hace hacia arriba y abajo
-                tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y) / 2), tamañoBarra.localPosition.z);
+                //tamañoBarra.localPosition = new Vector3(tamañoBarra.localPosition.x, tamañoBarra.localPosition.y - ((100 - tamañoBarra.sizeDelta.y) / 2), tamañoBarra.localPosition.z);
             }
         }
     }
