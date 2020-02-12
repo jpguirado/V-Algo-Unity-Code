@@ -24,8 +24,13 @@ public class MergeSort : MonoBehaviour
     //Game Object que hace referencia al prefab del elemento gráfico del array
     public GameObject ElementoGraficoArray;
 
+    //Game Object empty that will represent the original position of the graphic array elements
+    public GameObject OriginalPositionPrefab;
+
     //Lista con los GameObject que hacen referencia a la representación gráfica de cada uno de los elementos del array
     public List<GameObject> ArrayListGraphic;
+
+    public List<Color> ColorList;
 
     //List with the original positions of the graphic elemets of the array. This list will remain immutable
     public List<GameObject> OriginalPositions;
@@ -97,6 +102,9 @@ public class MergeSort : MonoBehaviour
 
     public BubbleLanguageManager BubbleLanguageManager;
 
+    //Distance that will the elements move in the state 1
+    public float MoveDownDistance;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -118,8 +126,8 @@ public class MergeSort : MonoBehaviour
 
         //arrayOriginal = CreateRandomArray(numElementos);
         arrayOriginal = new int[] { 8, 7, 4, 3, 6, 5, 9, 2, 10, 1};
+        InstantiateGraphicArray(arrayOriginal, Vector3.zero,true);
         ExecuteAndCreateStates(arrayOriginal);
-        InstantiateGraphicArray(arrayOriginal, Vector3.zero);
     }
 
     //Ejecuta el algoritmo y crea los estados necesarios para su reproducción por pasos
@@ -172,12 +180,16 @@ public class MergeSort : MonoBehaviour
 
     private int[] merge(int[] array, int p, int q, int r)
     {
+        if (p == 5)
+            print("Debug");
+
+
         //Save the state to remark
         listaEstados.Add(new MergeSortState()
         {
             StartIndex = p,
             EndIndex = r,
-            State = 0
+            State = 0,
         });
 
         int n1 = q - p + 1;
@@ -199,11 +211,23 @@ public class MergeSort : MonoBehaviour
         i = 0;
         j = 0;
 
+        int[] arrayBeforeChanges = (int[])array.Clone();
+
         for (int k = p; k<(r+1); k++)
         {
             //Here makes the swap
             if (L[i] <= R[j])
             {
+                int index = 0;
+
+                for (int m = 0; m < arrayBeforeChanges.Length; m++)
+                {
+                    if (L[i] == arrayBeforeChanges[m])
+                    {
+                        index = m;
+                        break;
+                    }
+                }
                 //If this 2 numbers are equal, don't swap
                 array[k] = L[i];
                 //Save state
@@ -211,13 +235,22 @@ public class MergeSort : MonoBehaviour
                 {
                     NumberToMove = L[i],
                     PositionIndexToMove = k,
+                    Color = ColorList[index],
                     State = 1,
-                   
                 });
                 i++;
             }
             else
             {
+                int index = 0;
+                for (int m = 0; m < arrayBeforeChanges.Length; m++)
+                {
+                    if (R[j] == arrayBeforeChanges[m]) 
+                    {
+                        index = m;
+                        break;
+                    }
+                }
                 //If this 2 numbers are equal, don't swap
                 array[k] = R[j];
                 //Save state
@@ -225,6 +258,7 @@ public class MergeSort : MonoBehaviour
                 {
                     NumberToMove = R[j],
                     PositionIndexToMove = k,
+                    Color = ColorList[index],
                     State = 1,
                 });
                 j++;
@@ -238,19 +272,23 @@ public class MergeSort : MonoBehaviour
             {
                 PositionIndexToMove = x,
                 State = 2,
-                array = (int[])array.Clone()
+                array = (int[])array.Clone(),
+                arrayBeforeChanges = (int[])arrayBeforeChanges.Clone()
             });
         }
 
+        //Make changes in the color list
+        for (int y = p; y <= r; y++)
+        {
+            ColorList[y] = ColorList[p];
+        }
 
-
-        //print(array[0] + " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5] + " " + array[6] + " " + array[7] + " " + array[8] + " " + array[9] + " ");
         return array;
     }
 
 
     //Instancia los elementos gráficos que representan al array y los mete en una lista de GameObject
-    private void InstantiateGraphicArray(int[] array, Vector3 escalaActual)
+    private void InstantiateGraphicArray(int[] array, Vector3 escalaActual, bool CreateColorList)
     {
         //Solución que hace las barras más anchas cuantos menos elementos haya, para ocupar siempre toda la pantalla
         if (engordarBarras)
@@ -276,6 +314,7 @@ public class MergeSort : MonoBehaviour
 
                 //Establecer el número correspondiente
                 instanciado.GetComponentInChildren<TextMeshProUGUI>().text = array[i].ToString();
+                
 
                 //Array que dice el ancho de las barras en funcion del número de elementos seleccionados
                 int[] arrayWidth = new int[] { 80, 76, 72, 68, 64, 60, 56, 52, 48, 44, 40 };
@@ -326,12 +365,16 @@ public class MergeSort : MonoBehaviour
                 //Random colors because this algorithm at the start creates partitions of size 1
                 Color RandomColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
                 instanciado.transform.Find("Barra").GetComponent<Image>().color = RandomColor;
+                instanciado.GetComponent<ArrayElement>().OriginalColor = RandomColor;
+
+                if(CreateColorList)
+                    ColorList.Add(RandomColor);
 
                 tamañoBarra.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
 
                 //Save the original position to help with the movements
-                GameObject originalPosition = new GameObject();
-                originalPosition = Instantiate(originalPosition);
+                //GameObject originalPosition = new GameObject();
+                GameObject originalPosition = Instantiate(OriginalPositionPrefab);
                 originalPosition.name = "Original Position " + i;
                 OriginalPositions.Add(originalPosition);
                 originalPosition.transform.SetParent(this.transform);
@@ -432,7 +475,7 @@ public class MergeSort : MonoBehaviour
 
                 //Target position - 100.0f to move down
                 Vector3 PositionToMove = OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position;
-                PositionToMove.y -= 100.0f;
+                PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
 
                 //Move the element
                 StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
@@ -493,127 +536,296 @@ public class MergeSort : MonoBehaviour
         }
 
         //Paso a paso
-        if (pausado && parado && ContadorPaso <= (listaEstados.Count - 1))
+        if (pausado && parado && ContadorPaso <= (listaEstados.Count))
         {
-            ////Paso adelante
-            //BotonStepOver.onClick.AddListener(delegate
-            //{
-            //    if (pausado)
-            //    {
-            //        if (!ejecutandoPaso)
-            //        {
-            //            ejecutandoPaso = true;
+            //Paso adelante
+            BotonStepOver.onClick.AddListener(delegate
+            {
+                if (pausado)
+                {
+                    if (!ejecutandoPaso)
+                    {
+                        ejecutandoPaso = true;
 
-            //            limpiarResalteCodigo();
+                        //limpiarResalteCodigo();
 
-            //            //Reproducir los estados
+                        //Remark Elements
+                        if (listaEstados[ContadorPaso].State == 0)
+                        {
+                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            //Remark graphic elements of the array
 
-            //            //Si el estado es un swap de elementos
-            //            if (listaEstados[ContadorPaso].Estado == 1)
-            //            {
-            //                //Ponemos en negrita la parte de codigo que estamos ejecutando
-            //                Code.text = Code.text.Replace("aux = array[p-1]", "<b>aux = array[p-1]</b>");
-            //                Code.text = Code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
-            //                Code.text = Code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
+                            for (int i = listaEstados[ContadorPaso].StartIndex; i <= listaEstados[ContadorPaso].EndIndex; i++)
+                            {
+                                Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
+                                ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 0.5f);
+                            }
+                            StartCoroutine(WaitTimeRemarkStep(0));
+                        }
 
-            //                ImagenCodigo.sprite = SpriteImagenCodigoSwap;
+                        //Move elements down
+                        if (listaEstados[ContadorPaso].State == 1)
+                        {
+                            ////Restore color and group by colors
+                            //for (int j = listaEstados[ContadorPaso-1].StartIndex; j <= listaEstados[ContadorPaso-1].EndIndex; j++)
+                            //{
+                            //    if (j == listaEstados[ContadorPaso-1].StartIndex)
+                            //    {
+                            //        //Number of elements are odd
+                            //        if (ArrayListGraphic.Count % 2 != 0)
+                            //        {
+                            //            if (listaEstados[ContadorPaso-1].StartIndex > ArrayListGraphic.Count / 2)
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            //            else
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            //        }
+                            //        else //Even
+                            //        {
+                            //            if (listaEstados[ContadorPaso-1].StartIndex >= ArrayListGraphic.Count / 2)
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            //            else
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            //        }
+                            //    }
+                            //    else
+                            //    {
+                            //        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[listaEstados[ContadorPaso-1].StartIndex].transform.Find("Barra").GetComponent<Image>().color;
+                            //    }
 
-            //                //Resaltar elementos graficos array
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            //    //ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            //}
 
-            //                //Movemos los elementos
-            //                StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], segundosParada * 0.5f));
-            //                StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
+                            for (int j = listaEstados[ContadorPaso-1].StartIndex; j <= listaEstados[ContadorPaso-1].EndIndex; j++)
+                            {
+                                //Restore the alfa color
+                                Color HighlightedColor = ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color;
+                                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
 
-            //                //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-            //                StartCoroutine(WaitTimeSwapStep(segundosParada));
+                                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[listaEstados[ContadorPaso-1].StartIndex].transform.Find("Barra").GetComponent<Image>().color;
 
-            //                //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
-            //                auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq] = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha];
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha] = auxGameObject;
-            //            }
-            //            //Si el estado es un if de elementos
-            //            if (listaEstados[ContadorPaso].Estado == 0)
-            //            {
-            //                //Ponemos en negrita la parte de codigo que estamos ejecutando
-            //                Code.text = Code.text.Replace("if array[p-1] > array[p]:", "<b>if array[p-1] > array[p]:</b>");
+                                if (listaEstados[ContadorPaso-1].StartIndex == 0 && listaEstados[ContadorPaso-1].EndIndex == (ArrayListGraphic.Count - 1))//Final step, we put main color of the proyect
+                                    ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            }
 
-            //                ImagenCodigo.sprite = SpriteImagenCodigoIf;
 
-            //                //Resaltar elementos graficos array
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            int index = 0;
 
-            //                //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-            //                StartCoroutine(WaitTimeIfStep(0));
-            //            }
-            //            ContadorPaso += 1;
-            //        }
-            //    }
-            //});
+                            //Find the index of the element to move
+                            for (int i = 0; i < ArrayListGraphic.Count; i++)
+                            {
+                                if (ArrayListGraphic[i].name == listaEstados[ContadorPaso].NumberToMove.ToString())
+                                {
+                                    index = i;
+                                    break;
+                                }
+                            }
 
-            ////Paso atras
-            //BotonStepBack.onClick.AddListener(delegate
-            //{
-            //    if (pausado)
-            //    {
-            //        if (!ejecutandoPaso && ContadorPaso > 0)
-            //        {
+                            //Target position - 100.0f to move down
+                            Vector3 PositionToMove = OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position;
+                            PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
 
-            //            ejecutandoPaso = true;
+                            //Move the element
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
+                            //StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
 
-            //            ContadorPaso -= 1;
+                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            StartCoroutine(WaitTimeMoveStep(StopSeconds));
 
-            //            limpiarResalteCodigo();
+                            //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
+                            //auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
+                            //ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq] = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha];
+                            //ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha] = auxGameObject;
 
-            //            //Reproducir los estados
+                            ////We have to clone the state of the array to our ArrayListGraphic
+                            //List<GameObject> listaAux = new List<GameObject>();
 
-            //            //Si el estado es un swap de elementos
-            //            if (listaEstados[ContadorPaso].Estado == 1)
-            //            {
-            //                //Ponemos en negrita la parte de codigo que estamos ejecutando
-            //                Code.text = Code.text.Replace("aux = array[p-1]", "<b>aux = array[p-1]</b>");
-            //                Code.text = Code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
-            //                Code.text = Code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
+                            ////Insert the elements in the right order in a aux list, then change our list by this.
+                            //for(int i = 0; i < listaEstados[ContadorPaso].array.Length; i++)
+                            //{
+                            //    for(int j = 0; j < ArrayListGraphic.Count; j++)
+                            //    {
+                            //        if (listaEstados[ContadorPaso].array[i].ToString() == ArrayListGraphic[j].name)
+                            //            listaAux.Add(ArrayListGraphic[j]);
+                            //    }
+                            //}
 
-            //                ImagenCodigo.sprite = SpriteImagenCodigoSwap;
+                            //ArrayListGraphic = listaAux;
+                        }
 
-            //                //Resaltar elementos graficos array
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                        //Move elements up
+                        if (listaEstados[ContadorPaso].State == 2)
+                        {
+                            //We have to do the changes to our ArrayListGraphic
 
-            //                //Movemos los elementos
-            //                StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], segundosParada * 0.5f));
-            //                StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
+                            //We have to clone the state of the array to our ArrayListGraphic
+                            List<GameObject> listaAux = new List<GameObject>();
 
-            //                //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-            //                StartCoroutine(WaitTimeSwapStep(segundosParada));
+                            //Insert the elements in the right order in a aux list, then change our list by this.
+                            for (int i = 0; i < listaEstados[ContadorPaso].array.Length; i++)
+                            {
+                                for (int j = 0; j < ArrayListGraphic.Count; j++)
+                                {
+                                    if (listaEstados[ContadorPaso].array[i].ToString() == ArrayListGraphic[j].name)
+                                        listaAux.Add(ArrayListGraphic[j]);
+                                }
+                            }
 
-            //                //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
-            //                auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq] = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha];
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha] = auxGameObject;
-            //            }
-            //            //Si el estado es un if de elementos
-            //            if (listaEstados[ContadorPaso].Estado == 0)
-            //            {
-            //                //Ponemos en negrita la parte de codigo que estamos ejecutando
-            //                Code.text = Code.text.Replace("if array[p-1] > array[p]:", "<b>if array[p-1] > array[p]:</b>");
+                            ArrayListGraphic = listaAux;
 
-            //                ImagenCodigo.sprite = SpriteImagenCodigoIf;
+                            //Move the element up
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].PositionIndexToMove], OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position, StopSeconds * 0.5f));
 
-            //                //Resaltar elementos graficos array
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
-            //                ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            StartCoroutine(WaitTimeMoveStep(StopSeconds));
+                        }
+                        ContadorPaso += 1;
+                    }
+                }
+            });
 
-            //                //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-            //                StartCoroutine(WaitTimeIfStep(0));
-            //            }
-            //        }
-            //    }
-            //});
+            //Paso atras
+            BotonStepBack.onClick.AddListener(delegate
+            {
+                if (pausado)
+                {
+                    if (!ejecutandoPaso && ContadorPaso > 0)
+                    {
+
+                        ejecutandoPaso = true;
+
+                        ContadorPaso -= 1;
+
+                        //limpiarResalteCodigo();
+
+                        //Reproducir los estados
+                        //Remark Elements
+                        if (listaEstados[ContadorPaso].State == 0)
+                        {
+                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            //Remark graphic elements of the array
+
+                            for (int i = listaEstados[ContadorPaso].StartIndex; i <= listaEstados[ContadorPaso].EndIndex; i++)
+                            {
+                                Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
+                                ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
+                            }
+                            StartCoroutine(WaitTimeRemarkStep(0));
+                        }
+
+                        //Move elements down
+                        if (listaEstados[ContadorPaso].State == 1)
+                        {
+                            ////Restore color and group by colors
+                            //for (int j = listaEstados[ContadorPaso - 1].StartIndex; j <= listaEstados[ContadorPaso - 1].EndIndex; j++)
+                            //{
+                            //    if (j == listaEstados[ContadorPaso - 1].StartIndex)
+                            //    {
+                            //        //Number of elements are odd
+                            //        if (ArrayListGraphic.Count % 2 != 0)
+                            //        {
+                            //            if (listaEstados[ContadorPaso - 1].StartIndex > ArrayListGraphic.Count / 2)
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            //            else
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            //        }
+                            //        else //Even
+                            //        {
+                            //            if (listaEstados[ContadorPaso - 1].StartIndex >= ArrayListGraphic.Count / 2)
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+                            //            else
+                            //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            //        }
+                            //    }
+                            //    else
+                            //    {
+                            //        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[listaEstados[ContadorPaso - 1].StartIndex].transform.Find("Barra").GetComponent<Image>().color;
+                            //    }
+
+                            //    //ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+                            //}
+
+                            int index = 0;
+
+                            //Find the index of the element to move
+                            for (int i = 0; i < ArrayListGraphic.Count; i++)
+                            {
+                                if (ArrayListGraphic[i].name == listaEstados[ContadorPaso].NumberToMove.ToString())
+                                {
+                                    index = i;
+                                    break;
+                                }
+                            }
+
+                            //Restore the color
+                            //ArrayListGraphic[index].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[index].GetComponent<ArrayElement>().OriginalColor;
+                            ArrayListGraphic[index].transform.Find("Barra").GetComponent<Image>().color = listaEstados[ContadorPaso].Color;
+
+                            //Target position - 100.0f to move down
+                            Vector3 PositionToMove = OriginalPositions[index].transform.position;
+
+                            //Move the element
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
+                            //StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
+
+                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            StartCoroutine(WaitTimeMoveStep(StopSeconds));
+
+                            //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
+                            //auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
+                            //ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq] = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha];
+                            //ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha] = auxGameObject;
+
+                            ////We have to clone the state of the array to our ArrayListGraphic
+                            //List<GameObject> listaAux = new List<GameObject>();
+
+                            ////Insert the elements in the right order in a aux list, then change our list by this.
+                            //for(int i = 0; i < listaEstados[ContadorPaso].array.Length; i++)
+                            //{
+                            //    for(int j = 0; j < ArrayListGraphic.Count; j++)
+                            //    {
+                            //        if (listaEstados[ContadorPaso].array[i].ToString() == ArrayListGraphic[j].name)
+                            //            listaAux.Add(ArrayListGraphic[j]);
+                            //    }
+                            //}
+
+                            //ArrayListGraphic = listaAux;
+                        }
+
+                        //Move elements up
+                        if (listaEstados[ContadorPaso].State == 2)
+                        {
+                            //Target position - 100.0f to move down
+                            Vector3 PositionToMove = OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position;
+                            PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
+
+                            //Move the element up
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].PositionIndexToMove], PositionToMove, StopSeconds * 0.5f));
+
+                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            StartCoroutine(WaitTimeMoveStep(StopSeconds));
+
+                            //We only revert the state of the array if we go to state 1
+                            if (listaEstados[ContadorPaso - 1].State == 1)
+                            {
+                                //We have to do the changes to our ArrayListGraphic
+                                //We have to clone the state of the array to our ArrayListGraphic
+                                List<GameObject> listaAux = new List<GameObject>();
+
+                                //Insert the elements in the right order in a aux list, then change our list by this.
+                                for (int i = 0; i < listaEstados[ContadorPaso].arrayBeforeChanges.Length; i++)
+                                {
+                                    for (int j = 0; j < ArrayListGraphic.Count; j++)
+                                    {
+                                        if (listaEstados[ContadorPaso].arrayBeforeChanges[i].ToString() == ArrayListGraphic[j].name)
+                                            listaAux.Add(ArrayListGraphic[j]);
+                                    }
+                                }
+                                ArrayListGraphic = listaAux;
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -709,44 +921,60 @@ public class MergeSort : MonoBehaviour
         for(int i = listaEstados[paso].StartIndex; i<= listaEstados[paso].EndIndex; i++)
         {
             Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
-            ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r,HighlightedColor.g,HighlightedColor.b,HighlightedColor.a - 0.5f);
+            ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r,HighlightedColor.g,HighlightedColor.b,0.5f);
         }
 
 
         yield return new WaitForSeconds(tiempoEspera);
+
+
+        //Restore color of graphic elements of the array
+        for (int i = listaEstados[paso].StartIndex; i <= listaEstados[paso].EndIndex; i++)
+        {
+            Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
+            ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
+        }
 
         ////Quitamos la negrita a la parte que estamos ejecutando
         //Code.text = Code.text.Replace("<b>if array[p-1] > array[p]:</b>", "if array[p-1] > array[p]:");
 
         //ImagenCodigo.sprite = SpriteImagenCodigoLimpia;
 
-        //Restore color and group by colors
+        ////Restore color and group by colors
+        //for (int j = listaEstados[paso].StartIndex; j <= listaEstados[paso].EndIndex; j++)
+        //{
+        //    if (j == listaEstados[paso].StartIndex)
+        //    {
+        //        //Number of elements are odd
+        //        if (ArrayListGraphic.Count % 2 != 0)
+        //        {
+        //            if (listaEstados[paso].StartIndex > ArrayListGraphic.Count / 2)
+        //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+        //            else
+        //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        //        }
+        //        else //Even
+        //        {
+        //            if (listaEstados[paso].StartIndex >= ArrayListGraphic.Count / 2)
+        //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
+        //            else
+        //                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[listaEstados[paso].StartIndex].transform.Find("Barra").GetComponent<Image>().color;
+        //    }
+
+        //    //ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        //}
+
         for (int j = listaEstados[paso].StartIndex; j <= listaEstados[paso].EndIndex; j++)
         {
-            if (j == listaEstados[paso].StartIndex)
-            {
-                //Number of elements are odd
-                if (ArrayListGraphic.Count % 2 != 0)
-                {
-                    if (listaEstados[paso].StartIndex > ArrayListGraphic.Count / 2)
-                        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
-                    else
-                        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
-                }
-                else //Even
-                {
-                    if (listaEstados[paso].StartIndex >= ArrayListGraphic.Count / 2)
-                        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorResalteElementosGraficos;
-                    else
-                        ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
-                }
-            }
-            else
-            {
-                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[listaEstados[paso].StartIndex].transform.Find("Barra").GetComponent<Image>().color;
-            }
+            ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ArrayListGraphic[listaEstados[paso].StartIndex].transform.Find("Barra").GetComponent<Image>().color;
 
-            //ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+            if (listaEstados[paso].StartIndex == 0 && listaEstados[paso].EndIndex == (ArrayListGraphic.Count - 1))//Final step, we put main color of the proyect
+                ArrayListGraphic[j].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
         }
 
         parado = true;
@@ -754,7 +982,7 @@ public class MergeSort : MonoBehaviour
     }
 
     //Funcion que espera tiempo determinado y resalta la parte del swap de elementos cuando la ejecución va paso por paso
-    private IEnumerator WaitTimeSwapStep(float tiempoEspera)
+    private IEnumerator WaitTimeMoveStep(float tiempoEspera)
     {
         parado = false;
         yield return new WaitForSeconds(tiempoEspera);
@@ -763,7 +991,7 @@ public class MergeSort : MonoBehaviour
     }
 
     //Funcion que espera tiempo determinado y resalta la parte del if cuando la ejecución va paso por paso
-    private IEnumerator WaitTimeIfStep(float tiempoEspera)
+    private IEnumerator WaitTimeRemarkStep(float tiempoEspera)
     {
         parado = false;
         yield return new WaitForSeconds(tiempoEspera);
@@ -810,7 +1038,17 @@ public class MergeSort : MonoBehaviour
 
         //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
         ArrayListGraphic.Clear();
-        InstantiateGraphicArray(arrayOriginal, escalaActual);
+
+        //Eliminamos los objetos vacios
+        for (int i = 0; i < OriginalPositions.Count; i++)
+        {
+            Destroy(OriginalPositions[i]);
+        }
+
+        //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
+        OriginalPositions.Clear();
+
+        InstantiateGraphicArray(arrayOriginal, escalaActual,false);
     }
 
     //Termina la ejecución
@@ -832,7 +1070,24 @@ public class MergeSort : MonoBehaviour
 
         //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
         ArrayListGraphic.Clear();
-        InstantiateGraphicArray(arrayOrdenado, escalaActual);
+
+        //Eliminamos los objetos vacios
+        for (int i = 0; i < OriginalPositions.Count; i++)
+        {
+            Destroy(OriginalPositions[i]);
+        }
+
+        //limpiamos la lista y volvemos a isntanciar todos los elementos gráficos y volvemos a crear la lista
+        OriginalPositions.Clear();
+
+
+        InstantiateGraphicArray(arrayOrdenado, escalaActual,false);
+
+        //we color all the array elements of the final color
+        for (int i = 0; i < ArrayListGraphic.Count; i++)
+        {
+           ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
+        }
     }
 
     //Return to the main menu
@@ -852,6 +1107,8 @@ public class MergeSortState
     public int StartIndex { get; set; }
     public int EndIndex { get; set; }
 
+    public Color Color;
+
 
     //State 1
     //Number of the array to move down
@@ -862,5 +1119,8 @@ public class MergeSortState
 
     //State of the array
     public int[] array;
+
+    //State of the array before changes
+    public int[] arrayBeforeChanges;
 
 }
