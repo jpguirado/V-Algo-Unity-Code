@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-using TMPro;
 
 public class MergeSort : MonoBehaviour
 {
@@ -63,16 +61,19 @@ public class MergeSort : MonoBehaviour
     public Button BotonInicio;
 
     //Imagen Codigo
-    public Image ImagenCodigo;
+    public Image CodeImage;
 
-    //Sprite imagen codigo original
-    public Sprite SpriteImagenCodigoLimpia;
+    //Sprite original code
+    public Sprite SpriteCodeImage;
 
-    //Sprite imagen codigo if
-    public Sprite SpriteImagenCodigoIf;
+    //Sprite image remark code
+    public Sprite SpriteCodeRemarkImage;
 
-    //Sprite imagen codigo swap
-    public Sprite SpriteImagenCodigoSwap;
+    //Sprite image move down code
+    public Sprite SpriteCodeMoveDownImage;
+
+    //Sprite image move up code
+    public Sprite SpriteCodeMoveUpImage;
 
     //Indica si esta ejecutando un paso
     private bool ejecutandoPaso;
@@ -100,16 +101,21 @@ public class MergeSort : MonoBehaviour
     //Speed Slider
     public Slider SliderVelocidad;
 
-    public BubbleLanguageManager BubbleLanguageManager;
+    public MergeSortLanguageManager MergeSortLanguageManager;
 
     //Distance that will the elements move in the state 1
     public float MoveDownDistance;
+
+    public RectTransform PosYReferenceMoveDown;
+
+    //distance of displacement of the bars with respect to the center
+    public float LateralShift; 
 
     // Start is called before the first frame update
     void Start()
     {
         ////Set the language
-        //BubbleLanguageManager.SetLanguage();
+        MergeSortLanguageManager.SetLanguage();
 
         ////Establecemos variables
         parado = true;
@@ -121,13 +127,25 @@ public class MergeSort : MonoBehaviour
         //Si arrancamos directamente la escena, esto habra que eliminarlo en build final
         if (numElementos == 0)
         {
-            numElementos = 10;
+            numElementos = 15;
         }
 
-        //arrayOriginal = CreateRandomArray(numElementos);
-        arrayOriginal = new int[] { 8, 7, 4, 3, 6, 5, 9, 2, 10, 1};
-        InstantiateGraphicArray(arrayOriginal, Vector3.zero,true);
+
+        arrayOriginal = CreateRandomArray(numElementos);
+        //arrayOriginal = new int[] { 8, 7, 4, 3, 6, 5, 9, 2, 10, 1};
+        InstantiateGraphicArray(arrayOriginal, GetScale(),true);
         ExecuteAndCreateStates(arrayOriginal);
+    }
+
+    private Vector3 GetScale()
+    {
+        Vector3 scale = this.transform.localScale;
+
+        scale.x += 1;
+        scale.y += 1;
+        scale.z += 1;
+
+        return scale;
     }
 
     //Ejecuta el algoritmo y crea los estados necesarios para su reproducción por pasos
@@ -336,7 +354,7 @@ public class MergeSort : MonoBehaviour
         else
         {
             //Array con distancia entre elementos en funcion del número que seleccione el usuario para aprovechar más la pantalla
-            int[] arrayDistanciaElementos = new int[] { 40, 37, 34, 31, 28, 25, 22, 19, 16, 13, 10 };
+            int[] arrayDistanciaElementos = new int[] { 40, 35, 30, 25, 20, 15};
             distanceBetweenElements = arrayDistanciaElementos[numElementos-10];
 
             for (int i = 0; i < array.Length; i++)
@@ -347,7 +365,7 @@ public class MergeSort : MonoBehaviour
                 ArrayListGraphic.Add(instanciado);
                 instanciado.transform.SetParent(this.transform);
                 float posicionX = (numElementos * 80 + (numElementos - 1) * distanceBetweenElements) / 2;
-                Vector3 posicion = instanciado.GetComponent<RectTransform>().localPosition = new Vector3(-posicionX + i * (40 * 2 + distanceBetweenElements) + 40, 100.0f, 0.0f);
+                Vector3 posicion = instanciado.GetComponent<RectTransform>().localPosition = new Vector3(-posicionX + i * (40 * 2 + distanceBetweenElements) + 40 + LateralShift, 100.0f, 0.0f);
 
                 //Restauramos la escala original si existia
                 if (escalaActual != Vector3.zero)
@@ -365,7 +383,6 @@ public class MergeSort : MonoBehaviour
                 //Random colors because this algorithm at the start creates partitions of size 1
                 Color RandomColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
                 instanciado.transform.Find("Barra").GetComponent<Image>().color = RandomColor;
-                instanciado.GetComponent<ArrayElement>().OriginalColor = RandomColor;
 
                 if(CreateColorList)
                     ColorList.Add(RandomColor);
@@ -476,13 +493,14 @@ public class MergeSort : MonoBehaviour
                 //Target position - 100.0f to move down
                 Vector3 PositionToMove = OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position;
                 PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
+                PositionToMove.y = PosYReferenceMoveDown.position.y;
 
                 //Move the element
                 StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
                 //StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
 
                 //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                StartCoroutine(WaitTimeMove(StopSeconds));
+                StartCoroutine(WaitTimeMove(StopSeconds,1));
 
                 //Realizamos los cambios en nuestra lista de elementos graficos que representa al array
                 //auxGameObject = ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq];
@@ -529,7 +547,7 @@ public class MergeSort : MonoBehaviour
                 StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].PositionIndexToMove], OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position, StopSeconds * 0.5f));
                 
                 //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                StartCoroutine(WaitTimeMove(StopSeconds));
+                StartCoroutine(WaitTimeMove(StopSeconds,2));
             }
 
             ContadorPaso += 1;
@@ -547,14 +565,13 @@ public class MergeSort : MonoBehaviour
                     {
                         ejecutandoPaso = true;
 
-                        //limpiarResalteCodigo();
+                        limpiarResalteCodigo();
 
                         //Remark Elements
                         if (listaEstados[ContadorPaso].State == 0)
                         {
-                            //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                            CodeImage.sprite = SpriteCodeRemarkImage;
                             //Remark graphic elements of the array
-
                             for (int i = listaEstados[ContadorPaso].StartIndex; i <= listaEstados[ContadorPaso].EndIndex; i++)
                             {
                                 Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
@@ -595,6 +612,8 @@ public class MergeSort : MonoBehaviour
                             //    //ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
                             //}
 
+                            CodeImage.sprite = SpriteCodeMoveDownImage;
+
                             for (int j = listaEstados[ContadorPaso-1].StartIndex; j <= listaEstados[ContadorPaso-1].EndIndex; j++)
                             {
                                 //Restore the alfa color
@@ -623,6 +642,7 @@ public class MergeSort : MonoBehaviour
                             //Target position - 100.0f to move down
                             Vector3 PositionToMove = OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position;
                             PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
+                            PositionToMove.y = PosYReferenceMoveDown.position.y;
 
                             //Move the element
                             StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
@@ -655,8 +675,9 @@ public class MergeSort : MonoBehaviour
                         //Move elements up
                         if (listaEstados[ContadorPaso].State == 2)
                         {
-                            //We have to do the changes to our ArrayListGraphic
+                            CodeImage.sprite = SpriteCodeMoveUpImage;
 
+                            //We have to do the changes to our ArrayListGraphic
                             //We have to clone the state of the array to our ArrayListGraphic
                             List<GameObject> listaAux = new List<GameObject>();
 
@@ -695,7 +716,7 @@ public class MergeSort : MonoBehaviour
 
                         ContadorPaso -= 1;
 
-                        //limpiarResalteCodigo();
+                        limpiarResalteCodigo();
 
                         //Reproducir los estados
                         //Remark Elements
@@ -703,6 +724,9 @@ public class MergeSort : MonoBehaviour
                         {
                             //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
                             //Remark graphic elements of the array
+                            CodeImage.sprite = SpriteCodeImage;
+
+                            RemarkCodeStepBack(ContadorPaso);
 
                             for (int i = listaEstados[ContadorPaso].StartIndex; i <= listaEstados[ContadorPaso].EndIndex; i++)
                             {
@@ -743,6 +767,7 @@ public class MergeSort : MonoBehaviour
 
                             //    //ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
                             //}
+                            RemarkCodeStepBack(ContadorPaso);
 
                             int index = 0;
 
@@ -794,6 +819,8 @@ public class MergeSort : MonoBehaviour
                         //Move elements up
                         if (listaEstados[ContadorPaso].State == 2)
                         {
+                            RemarkCodeStepBack(ContadorPaso);
+
                             //Target position - 100.0f to move down
                             Vector3 PositionToMove = OriginalPositions[listaEstados[ContadorPaso].PositionIndexToMove].transform.position;
                             PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
@@ -829,26 +856,36 @@ public class MergeSort : MonoBehaviour
         }
     }
 
+    private void RemarkCodeStepBack(int contadorPaso)
+    {
+        if (ContadorPaso > 0)
+        {
+            contadorPaso = ContadorPaso - 1;
+
+            if (listaEstados[contadorPaso].State == 0)
+             {
+                CodeImage.sprite = SpriteCodeRemarkImage;
+                for (int i = listaEstados[contadorPaso].StartIndex; i <= listaEstados[contadorPaso].EndIndex; i++)
+                {
+                    Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
+                    ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 0.5f);
+                }
+            }
+
+            else if (listaEstados[contadorPaso].State == 1)
+            {
+                CodeImage.sprite = SpriteCodeMoveDownImage;
+            }
+            else if (listaEstados[contadorPaso].State == 2)
+                CodeImage.sprite = SpriteCodeMoveUpImage;
+        }
+    }
+
     //Funcion que limpia todos los resaltes, tanto de código como de elementos gráficos del array
     private void limpiarResalteCodigo()
     {
-        //Swap
-        Code.text = Code.text.Replace("<b>aux = array[p-1]</b>", "aux = array[p-1]");
-        Code.text = Code.text.Replace("<b>array[p-1] = array[p]</b>", "array[p-1] = array[p]");
-        Code.text = Code.text.Replace("<b>array[p] = aux</b>", "array[p] = aux");
-
-        //If
-        Code.text = Code.text.Replace("<b>if array[p-1] > array[p]:</b>", "if array[p-1] > array[p]:");
-
         //Codigo limpio sin resaltes
-        ImagenCodigo.sprite = SpriteImagenCodigoLimpia;
-
-        //Reestablecemos el color de las barras
-        for (int i = 0; i < ArrayListGraphic.Count; i++)
-        {
-            ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
-        }
-
+        CodeImage.sprite = SpriteCodeImage;
     }
 
     //Function that allows animate the permutations of the array
@@ -866,7 +903,7 @@ public class MergeSort : MonoBehaviour
     }
 
     //Funcion que espera tiempo determinado y resalta la parte del swap de elementos
-    private IEnumerator WaitTimeMove(float tiempoEspera)
+    private IEnumerator WaitTimeMove(float tiempoEspera, int state)
     {
         parado = false;
 
@@ -876,7 +913,10 @@ public class MergeSort : MonoBehaviour
         //Code.text = Code.text.Replace("aux = array[p-1]", "<b>aux = array[p-1]</b>");
         //Code.text = Code.text.Replace("array[p-1] = array[p]", "<b>array[p-1] = array[p]</b>");
         //Code.text = Code.text.Replace("array[p] = aux", "<b>array[p] = aux</b>");
-
+        if (state == 1)
+            CodeImage.sprite = SpriteCodeMoveDownImage;
+        else
+            CodeImage.sprite = SpriteCodeMoveUpImage;
         //ImagenCodigo.sprite = SpriteImagenCodigoSwap;
 
         ////Resaltar elementos graficos array
@@ -891,6 +931,7 @@ public class MergeSort : MonoBehaviour
         //Code.text = Code.text.Replace("<b>array[p] = aux</b>", "array[p] = aux");
 
         //ImagenCodigo.sprite = SpriteImagenCodigoLimpia;
+        CodeImage.sprite = SpriteCodeImage;
 
         ////Quitar resalte elementos graficos array
         //ArrayListGraphic[listaEstados[paso].IndiceElementoIzq].transform.Find("Barra").GetComponent<Image>().color = ColorOriginalElementosGráficos;
@@ -925,6 +966,8 @@ public class MergeSort : MonoBehaviour
         }
 
 
+        CodeImage.sprite = SpriteCodeRemarkImage;
+
         yield return new WaitForSeconds(tiempoEspera);
 
 
@@ -934,6 +977,9 @@ public class MergeSort : MonoBehaviour
             Color HighlightedColor = ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color;
             ArrayListGraphic[i].transform.Find("Barra").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
         }
+
+
+        CodeImage.sprite = SpriteCodeImage;
 
         ////Quitamos la negrita a la parte que estamos ejecutando
         //Code.text = Code.text.Replace("<b>if array[p-1] > array[p]:</b>", "if array[p-1] > array[p]:");

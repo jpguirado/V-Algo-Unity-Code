@@ -115,9 +115,18 @@ public class Bubble : MonoBehaviour
 
         arrayOriginal = CreateRandomArray(numElementos);
         ExecuteAndCreateStates(arrayOriginal);
-        InstantiateGraphicArray(arrayOriginal,Vector3.zero);
+        InstantiateGraphicArray(arrayOriginal, GetScale());
     }
+    private Vector3 GetScale()
+    {
+        Vector3 scale = this.transform.localScale;
 
+        scale.x += 1;
+        scale.y += 1;
+        scale.z += 1;
+
+        return scale;
+    }
     //Ejecuta el algoritmo y crea los estados necesarios para su reproducción por pasos
     private void ExecuteAndCreateStates(int[] array)
     {

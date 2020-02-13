@@ -19,7 +19,7 @@ public class MenuConfiguracion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        TextoNumElementos.text = NumElementos.ToString();
     }
 
     //Sumar elementos

@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
         MenuConfiguracionEjecucion.SetActive(true);
 
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "Burbuja";
+        MenuConfiguracion.NumElementos = 10;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 20;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos= 10;
     }
     //Click en el boton de algoritmo de la burbuja
     public void OnClickMergeSort()
@@ -34,6 +37,9 @@ public class UIManager : MonoBehaviour
         MenuConfiguracionEjecucion.SetActive(true);
 
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "MergeSort";
+        MenuConfiguracion.NumElementos = 10;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 15;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
     }
 
     //Click en el boton de algoritmo de la burbuja
