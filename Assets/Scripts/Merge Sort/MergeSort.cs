@@ -28,7 +28,11 @@ public class MergeSort : MonoBehaviour
     //Lista con los GameObject que hacen referencia a la representación gráfica de cada uno de los elementos del array
     public List<GameObject> ArrayListGraphic;
 
-    public List<Color> ColorList;
+    //List with the color of each position of the array
+    private List<Color> ColorList;
+
+    //List with the color of each position of the array
+    private List<Color> OriginalColorList;
 
     //List with the original positions of the graphic elemets of the array. This list will remain immutable
     public List<GameObject> OriginalPositions;
@@ -123,6 +127,8 @@ public class MergeSort : MonoBehaviour
         listaEstados = new List<MergeSortState>();
         ejecutandoPaso = false;
         numElementos = MenuConfiguracion.NumElementos;
+        OriginalColorList = new List<Color>();
+        ColorList = new List<Color>();
 
         //Si arrancamos directamente la escena, esto habra que eliminarlo en build final
         if (numElementos == 0)
@@ -380,12 +386,19 @@ public class MergeSort : MonoBehaviour
                 //Cambiar la altura de la barra a un tamaño proporcional a su número y establecer su color
                 RectTransform tamañoBarra = instanciado.transform.Find("Barra").GetComponent<RectTransform>();
 
-                //Random colors because this algorithm at the start creates partitions of size 1
-                Color RandomColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
-                instanciado.transform.Find("Barra").GetComponent<Image>().color = RandomColor;
-
-                if(CreateColorList)
+               
+                if (CreateColorList)
+                {
+                    //Random colors because this algorithm at the start creates partitions of size 1
+                    Color RandomColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+                    instanciado.transform.Find("Barra").GetComponent<Image>().color = RandomColor;
                     ColorList.Add(RandomColor);
+                    OriginalColorList.Add(RandomColor);
+                }
+                else
+                {
+                    instanciado.transform.Find("Barra").GetComponent<Image>().color = OriginalColorList[i];
+                }
 
                 tamañoBarra.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
 
@@ -437,8 +450,6 @@ public class MergeSort : MonoBehaviour
 
         //Get the speed
         StopSeconds = SliderVelocidad.value;
-
-        GameObject auxGameObject;
 
         //Modo automatico
         if (!pausado && parado && ContadorPaso <= (listaEstados.Count - 1))
