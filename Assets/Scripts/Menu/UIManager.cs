@@ -43,6 +43,18 @@ public class UIManager : MonoBehaviour
     }
 
     //Click en el boton de algoritmo de la burbuja
+    public void OnClickQuickSort()
+    {
+        MainMenu.SetActive(false);
+        MenuConfiguracionEjecucion.SetActive(true);
+
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "QuickSort";
+        MenuConfiguracion.NumElementos = 10;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 15;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
+    }
+
+    //Click en el boton de algoritmo de la burbuja
     public void OnClickSettings()
     {
         MainMenu.SetActive(false);
