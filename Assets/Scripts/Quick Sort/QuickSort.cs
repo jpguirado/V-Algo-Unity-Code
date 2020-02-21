@@ -29,12 +29,6 @@ public class QuickSort : MonoBehaviour
     //Lista of the array graphic elements
     public List<GameObject> ArrayListGraphic;
 
-    //List with the color of each position of the array
-    private List<Color> ColorList;
-
-    //List with the color of each position of the array
-    private List<Color> OriginalColorList;
-
     //List with the original positions of the graphic elemets of the array. This list will remain immutable
     public List<GameObject> OriginalPositions;
 
@@ -105,7 +99,7 @@ public class QuickSort : MonoBehaviour
     public Slider SpeedSlider;
 
     //Language Manager
-    public MergeSortLanguageManager MergeSortLanguageManager;
+    public QuickSortLanguageManager QuickSortLanguageManager;
 
     //Distance that will the elements move in the state 1
     public float MoveDownDistance;
@@ -135,16 +129,14 @@ public class QuickSort : MonoBehaviour
     void Start()
     {
         ////Set the language
-        //MergeSortLanguageManager.SetLanguage();
+        QuickSortLanguageManager.SetLanguage();
 
         ////Set variables
         Stopped = true;
         StepCounter = 0;
         StatesList = new List<QuickSortState>();
         ExecutingStep = false;
-        //NElements = MenuConfiguracion.NumElementos;
-        //OriginalColorList = new List<Color>();
-        //ColorList = new List<Color>();
+        NElements = MenuConfiguracion.NumElementos;
 
         //If we start directly from the execution scene, this has to be removed in the final build
         if (NElements == 0)
@@ -153,14 +145,12 @@ public class QuickSort : MonoBehaviour
         }
 
         ArrayOriginal = CreateRandomArray(NElements);
-        //ArrayOriginal = new int[] { 8, 7, 6, 5, 4, 3, 2, 1, 10, 9 };
-
-        //ArrayOriginal = new int[] { 11, 10, 4, 1, 12, 9, 17, 6, 3, 18, 15, 2, 16, 7, 14, 13, 19, 20, 8, 5 };
         InstantiateGraphicArray(ArrayOriginal, GetScale(), true);
         ExecuteAndCreateStates(ArrayOriginal);
         RestoreElementsPlaced();
     }
 
+    //Restore the list of bools with the index oh the array elements placed
     private void RestoreElementsPlaced()
     {
        for(int i = 0; i<ElementsPlaced.Count; i++)
@@ -186,7 +176,6 @@ public class QuickSort : MonoBehaviour
                     NextElements = true
                 });
             }
-
         }
     }
 
@@ -319,22 +308,9 @@ public class QuickSort : MonoBehaviour
             }
         }
 
-        
-
         int aux = array[a];
         array[a] = array[b];
         array[b] = aux;
-
-        //if (type == 1)
-        //{
-        //    if (b + 1 == aux)
-        //        StatesList.Add(new QuickSortState()
-        //        {
-        //            State = 4,
-        //            indexToHighlight = b,
-        //            SwapType = type
-        //        });
-        //}
     }
 
     //Instatiate the graphic array elements and put them in a list
@@ -363,28 +339,7 @@ public class QuickSort : MonoBehaviour
             RectTransform BarHeight = instantiated.transform.Find("Bar").GetComponent<RectTransform>();
             BarHeight.sizeDelta = new Vector2(40, array[i] * (90 / (array.Length - 1)) + 10);
 
-            //if (CreateColorList)
-            //{
-            //    //Random colors because this algorithm at the start creates partitions of size 1
-            //    Color RandomColor = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
-            //    instantiated.transform.Find("Bar").GetComponent<Image>().color = RandomColor;
-            //    ColorList.Add(RandomColor);
-            //    OriginalColorList.Add(RandomColor);
-            //}
-            //else
-            //{
-            //    instantiated.transform.Find("Bar").GetComponent<Image>().color = OriginalColorList[i];
-            //}
-
             instantiated.transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-
-            ////Save the original position to help with the movements
-            //GameObject originalPosition = Instantiate(OriginalPositionPrefab);
-            //originalPosition.name = "Original Position " + i;
-            //OriginalPositions.Add(originalPosition);
-            //originalPosition.transform.SetParent(this.transform);
-            //Vector3 position = ArrayListGraphic[i].transform.position;
-            //originalPosition.transform.position = position;
         }
 
     }
@@ -426,65 +381,6 @@ public class QuickSort : MonoBehaviour
         //Automatic mode
         if (!Paused && Stopped && StepCounter <= (StatesList.Count - 1))
         {
-            ////Remark Elements
-            //if (StatesList[StepCounter].State == 0)
-            //{
-            //    //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-            //    StartCoroutine(WaitTimeRemark(StopSeconds));
-            //}
-
-            ////Move elements down
-            //if (StatesList[StepCounter].State == 1)
-            //{
-            //    int index = 0;
-
-            //    //Find the index of the element to move
-            //    for (int i = 0; i < ArrayListGraphic.Count; i++)
-            //    {
-            //        if (ArrayListGraphic[i].name == StatesList[StepCounter].NumberToMove.ToString())
-            //        {
-            //            index = i;
-            //            break;
-            //        }
-            //    }
-
-            //    Vector3 PositionToMove = OriginalPositions[StatesList[StepCounter].PositionIndexToMove].transform.position;
-            //    PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
-            //    PositionToMove.y = PosYReferenceMoveDown.position.y;
-
-            //    //Move the element
-            //    StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
-
-            //    //Routine that waits for time and highlights the text of the running code
-            //    StartCoroutine(WaitTimeMove(StopSeconds, 1));
-            //}
-
-            ////Move elements up
-            //if (StatesList[StepCounter].State == 2)
-            //{
-            //    //We have to do the changes to our ArrayListGraphic
-            //    //We have to clone the state of the array to our ArrayListGraphic
-            //    List<GameObject> AuxList = new List<GameObject>();
-
-            //    //Insert the elements in the right order in a aux list, then change our list by this.
-            //    for (int i = 0; i < StatesList[StepCounter].array.Length; i++)
-            //    {
-            //        for (int j = 0; j < ArrayListGraphic.Count; j++)
-            //        {
-            //            if (StatesList[StepCounter].array[i].ToString() == ArrayListGraphic[j].name)
-            //                AuxList.Add(ArrayListGraphic[j]);
-            //        }
-            //    }
-
-            //    ArrayListGraphic = AuxList;
-
-            //    //Move the element up
-            //    StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].PositionIndexToMove], OriginalPositions[StatesList[StepCounter].PositionIndexToMove].transform.position, StopSeconds * 0.5f));
-
-            //    //Routine that waits for time and highlights the text of the running code
-            //    StartCoroutine(WaitTimeMove(StopSeconds, 2));
-            //}
-
             //If state is highlight pivot
             if (StatesList[StepCounter].State == 0)
             {
@@ -549,87 +445,6 @@ public class QuickSort : MonoBehaviour
                         ExecutingStep = true;
 
                         CleanHighLightedCode();
-
-                        //Remark Elements
-                        //if (StatesList[StepCounter].State == 0)
-                        //{
-                        //    CodeImage.sprite = SpriteCodeRemarkImage;
-
-                        //    Remark graphic elements of the array
-                        //    for (int i = StatesList[StepCounter].StartIndex; i <= StatesList[StepCounter].EndIndex; i++)
-                        //    {
-                        //        Color HighlightedColor = ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color;
-                        //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 0.5f);
-                        //    }
-                        //    StartCoroutine(WaitTimeRemarkStep(0));
-                        //}
-
-                        //Move elements down
-                        //if (StatesList[StepCounter].State == 1)
-                        //{
-                        //    CodeImage.sprite = SpriteCodeMoveDownImage;
-
-                        //    for (int j = StatesList[StepCounter - 1].StartIndex; j <= StatesList[StepCounter - 1].EndIndex; j++)
-                        //    {
-                        //        Restore the alfa color
-                        //        Color HighlightedColor = ArrayListGraphic[j].transform.Find("Bar").GetComponent<Image>().color;
-                        //        ArrayListGraphic[j].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
-
-                        //        ArrayListGraphic[j].transform.Find("Bar").GetComponent<Image>().color = ArrayListGraphic[StatesList[StepCounter - 1].StartIndex].transform.Find("Bar").GetComponent<Image>().color;
-
-                        //        if (StatesList[StepCounter - 1].StartIndex == 0 && StatesList[StepCounter - 1].EndIndex == (ArrayListGraphic.Count - 1))//Final step, we put main color of the proyect
-                        //            ArrayListGraphic[j].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-                        //    }
-
-                        //    int index = 0;
-
-                        //    Find the index of the element to move
-                        //    for (int i = 0; i < ArrayListGraphic.Count; i++)
-                        //    {
-                        //        if (ArrayListGraphic[i].name == StatesList[StepCounter].NumberToMove.ToString())
-                        //        {
-                        //            index = i;
-                        //            break;
-                        //        }
-                        //    }
-
-                        //    Vector3 PositionToMove = OriginalPositions[StatesList[StepCounter].PositionIndexToMove].transform.position;
-                        //    PositionToMove.y = PosYReferenceMoveDown.position.y;
-
-                        //    Move the element
-                        //    StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
-
-                        //    Routine that waits for time and highlights the text of the running code
-                        //    StartCoroutine(WaitTimeMoveStep(StopSeconds));
-                        //}
-
-                        //Move elements up
-                        //if (StatesList[StepCounter].State == 2)
-                        //{
-                        //    CodeImage.sprite = SpriteCodeMoveUpImage;
-
-                        //    We have to do the changes to our ArrayListGraphic
-                        //    We have to clone the state of the array to our ArrayListGraphic
-                        //    List<GameObject> listaAux = new List<GameObject>();
-
-                        //    Insert the elements in the right order in a aux list, then change our list by this.
-                        //    for (int i = 0; i < StatesList[StepCounter].array.Length; i++)
-                        //    {
-                        //        for (int j = 0; j < ArrayListGraphic.Count; j++)
-                        //        {
-                        //            if (StatesList[StepCounter].array[i].ToString() == ArrayListGraphic[j].name)
-                        //                listaAux.Add(ArrayListGraphic[j]);
-                        //        }
-                        //    }
-
-                        //    ArrayListGraphic = listaAux;
-
-                        //    Move the element up
-                        //    StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].PositionIndexToMove], OriginalPositions[StatesList[StepCounter].PositionIndexToMove].transform.position, StopSeconds * 0.5f));
-
-                        //    Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                        //    StartCoroutine(WaitTimeMoveStep(StopSeconds));
-                        //}
 
                         //If state is highlight pivot
                         if (StatesList[StepCounter].State == 0)
@@ -706,87 +521,6 @@ public class QuickSort : MonoBehaviour
 
                         CleanHighLightedCode();
 
-                        ////Remark Elements
-                        //if (StatesList[StepCounter].State == 0)
-                        //{
-                        //    CodeImage.sprite = SpriteCodeImage;
-
-                        //    RemarkCodeStepBack(StepCounter);
-
-                        //    for (int i = StatesList[StepCounter].StartIndex; i <= StatesList[StepCounter].EndIndex; i++)
-                        //    {
-                        //        Color HighlightedColor = ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color;
-                        //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
-                        //    }
-                        //    StartCoroutine(WaitTimeRemarkStep(0));
-                        //}
-
-                        ////Move elements down
-                        //if (StatesList[StepCounter].State == 1)
-                        //{
-                        //    RemarkCodeStepBack(StepCounter);
-
-                        //    int index = 0;
-
-                        //    //Find the index of the element to move
-                        //    for (int i = 0; i < ArrayListGraphic.Count; i++)
-                        //    {
-                        //        if (ArrayListGraphic[i].name == StatesList[StepCounter].NumberToMove.ToString())
-                        //        {
-                        //            index = i;
-                        //            break;
-                        //        }
-                        //    }
-
-                        //    //Restore the color
-                        //    ArrayListGraphic[index].transform.Find("Bar").GetComponent<Image>().color = StatesList[StepCounter].Color;
-
-                        //    //Target position - 100.0f to move down
-                        //    Vector3 PositionToMove = OriginalPositions[index].transform.position;
-
-                        //    //Move the element
-                        //    StartCoroutine(MoveToPosition(ArrayListGraphic[index], PositionToMove, StopSeconds * 0.5f));
-                        //    //StartCoroutine(MoveToPosition(ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoDcha], ArrayListGraphic[listaEstados[ContadorPaso].IndiceElementoIzq], segundosParada * 0.5f));
-
-                        //    //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                        //    StartCoroutine(WaitTimeMoveStep(StopSeconds));
-                        //}
-
-                        ////Move elements up
-                        //if (StatesList[StepCounter].State == 2)
-                        //{
-                        //    RemarkCodeStepBack(StepCounter);
-
-                        //    //Target position - 100.0f to move down
-                        //    Vector3 PositionToMove = OriginalPositions[StatesList[StepCounter].PositionIndexToMove].transform.position;
-                        //    PositionToMove.y -= MoveDownDistance * ArrayListGraphic[0].transform.localScale.x;
-
-                        //    //Move the element up
-                        //    StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].PositionIndexToMove], PositionToMove, StopSeconds * 0.5f));
-
-                        //    //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
-                        //    StartCoroutine(WaitTimeMoveStep(StopSeconds));
-
-                        //    //We only revert the state of the array if we go to state 1
-                        //    if (StatesList[StepCounter - 1].State == 1)
-                        //    {
-                        //        //We have to do the changes to our ArrayListGraphic
-                        //        //We have to clone the state of the array to our ArrayListGraphic
-                        //        List<GameObject> listaAux = new List<GameObject>();
-
-                        //        //Insert the elements in the right order in a aux list, then change our list by this.
-                        //        for (int i = 0; i < StatesList[StepCounter].arrayBeforeChanges.Length; i++)
-                        //        {
-                        //            for (int j = 0; j < ArrayListGraphic.Count; j++)
-                        //            {
-                        //                if (StatesList[StepCounter].arrayBeforeChanges[i].ToString() == ArrayListGraphic[j].name)
-                        //                    listaAux.Add(ArrayListGraphic[j]);
-                        //            }
-                        //        }
-                        //        ArrayListGraphic = listaAux;
-                        //    }
-                        //}
-
                         //If state is highlight pivot
                         if (StatesList[StepCounter].State == 0)
                         {
@@ -851,32 +585,6 @@ public class QuickSort : MonoBehaviour
         }
     }
 
-    ////Highlight the code depending on wich state we go
-    //private void RemarkCodeStepBack(int contadorPaso)
-    //{
-    //    if (StepCounter > 0)
-    //    {
-    //        contadorPaso = StepCounter - 1;
-
-    //        if (StatesList[contadorPaso].State == 0)
-    //        {
-    //            CodeImage.sprite = SpriteCodeRemarkImage;
-    //            for (int i = StatesList[contadorPaso].StartIndex; i <= StatesList[contadorPaso].EndIndex; i++)
-    //            {
-    //                Color HighlightedColor = ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color;
-    //                ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 0.5f);
-    //            }
-    //        }
-
-    //        else if (StatesList[contadorPaso].State == 1)
-    //        {
-    //            CodeImage.sprite = SpriteCodeMoveDownImage;
-    //        }
-    //        else if (StatesList[contadorPaso].State == 2)
-    //            CodeImage.sprite = SpriteCodeMoveUpImage;
-    //    }
-    //}
-
     //Clean the highlighted code
     private void CleanHighLightedCode()
     {
@@ -888,7 +596,6 @@ public class QuickSort : MonoBehaviour
     {
         float time = 0f;
         Vector3 startPosition = initialObject.transform.position;
-        //Vector3 endPosition = finalObject.transform.position;
 
         while (time < 1)
         {
@@ -910,21 +617,10 @@ public class QuickSort : MonoBehaviour
         else
             CodeImage.sprite = SpriteCodeSwap2;
 
-        ////Resaltar elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-
-        //Highlight the element in correct position
-
-
         yield return new WaitForSeconds(waitTime);
 
         if(!stepMode)
             CodeImage.sprite = SpriteCodeImage;
-
-        ////Quitar resalte elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
 
         Stopped = true;
         ExecutingStep = false;
@@ -939,10 +635,6 @@ public class QuickSort : MonoBehaviour
 
         CodeImage.sprite = SpriteCodePivot0;
 
-        ////Resaltar elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-
         //Highlight Pivot
         if (!stepBack)
             ArrayListGraphic[StatesList[step].IndexPivot].transform.Find("Bar").GetComponent<Image>().color = PivotColor;
@@ -954,10 +646,6 @@ public class QuickSort : MonoBehaviour
         if(!stepMode)
             CodeImage.sprite = SpriteCodeImage;
 
-        ////Quitar resalte elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-
         Stopped = true;
         ExecutingStep = false;
     }
@@ -968,13 +656,6 @@ public class QuickSort : MonoBehaviour
         Stopped = false;
 
         int step = StepCounter;
-
-        //CodeImage.sprite = SpriteCodeSwapImage;
-
-        ////Resaltar elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-
 
         //Highlight Element in correct position
         if(StatesList[step].NextElements)
@@ -1004,12 +685,6 @@ public class QuickSort : MonoBehaviour
 
         yield return new WaitForSeconds(waitTime);
 
-        //CodeImage.sprite = SpriteCodeImage;
-
-        ////Quitar resalte elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-
         Stopped = true;
         ExecutingStep = false;
     }
@@ -1025,11 +700,6 @@ public class QuickSort : MonoBehaviour
             CodeImage.sprite = SpriteCodeSwap1;
         else
             CodeImage.sprite = SpriteCodeSwap2;
-
-        ////Resaltar elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-
 
         //Restore colors
         for (int i = 0; i < ArrayListGraphic.Count; i++)
@@ -1048,10 +718,6 @@ public class QuickSort : MonoBehaviour
         if(!stepMode)
             CodeImage.sprite = SpriteCodeImage;
 
-        ////Quitar resalte elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-
         Stopped = true;
         ExecutingStep = false;
     }
@@ -1063,13 +729,7 @@ public class QuickSort : MonoBehaviour
 
         int step = StepCounter;
 
-        
-
-        ////Resaltar elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
-
-        //Higjlight Pivot
+        //Highlight Pivot
         if(!ElementsPlaced[StatesList[step].indexToHighlight])
             ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = color;
         else
@@ -1088,70 +748,9 @@ public class QuickSort : MonoBehaviour
         if(!stepMode)
             CodeImage.sprite = SpriteCodeImage;
 
-        ////Quitar resalte elementos graficos array
-        //ArrayListGraphic[StatesList[step].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //ArrayListGraphic[StatesList[step].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-
         Stopped = true;
         ExecutingStep = false;
     }
-
-    ////Wait time and highlighted the elements involved in the step
-    //private IEnumerator WaitTimeRemark(float waitTime)
-    //{
-    //    Stopped = false;
-
-    //    int step = StepCounter;
-
-    //    //Remark graphic elements of the array
-    //    for (int i = StatesList[step].StartIndex; i <= StatesList[step].EndIndex; i++)
-    //    {
-    //        Color HighlightedColor = ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color;
-    //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 0.5f);
-    //    }
-
-    //    CodeImage.sprite = SpriteCodeRemarkImage;
-
-    //    yield return new WaitForSeconds(waitTime);
-
-    //    //Restore color of graphic elements of the array
-    //    for (int i = StatesList[step].StartIndex; i <= StatesList[step].EndIndex; i++)
-    //    {
-    //        Color HighlightedColor = ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color;
-    //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
-    //    }
-
-    //    CodeImage.sprite = SpriteCodeImage;
-
-    //    for (int j = StatesList[step].StartIndex; j <= StatesList[step].EndIndex; j++)
-    //    {
-    //        ArrayListGraphic[j].transform.Find("Bar").GetComponent<Image>().color = ArrayListGraphic[StatesList[step].StartIndex].transform.Find("Bar").GetComponent<Image>().color;
-
-    //        if (StatesList[step].StartIndex == 0 && StatesList[step].EndIndex == (ArrayListGraphic.Count - 1))//Final step, we put main color of the proyect
-    //            ArrayListGraphic[j].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-    //    }
-
-    //    Stopped = true;
-    //    ExecutingStep = false;
-    //}
-
-    //Wait time and highlighted the part of move elements in the step mode
-    //private IEnumerator WaitTimeMoveStep(float waitTime)
-    //{
-    //    Stopped = false;
-    //    yield return new WaitForSeconds(waitTime);
-    //    Stopped = true;
-    //    ExecutingStep = false;
-    //}
-
-    ////Wait time and highlighted the elements involved in the step in step mode
-    //private IEnumerator WaitTimeRemarkStep(float waitTime)
-    //{
-    //    Stopped = false;
-    //    yield return new WaitForSeconds(waitTime);
-    //    Stopped = true;
-    //    ExecutingStep = false;
-    //}
 
     //Resume execution
     public void playPauseExecution()
@@ -1267,7 +866,6 @@ public class QuickSortState
     public int indexToHighlight;
 
     //Swap Elements - 3
-
     public int LeftElementIndex { get; set; }
 
     public int RightElementIndex { get; set; }

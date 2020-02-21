@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviour
 
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "QuickSort";
         MenuConfiguracion.NumElementos = 10;
-        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 15;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 20;
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
     }
 

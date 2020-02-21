@@ -213,9 +213,12 @@ public class Bubble : MonoBehaviour
             //If state is elements swap
             if (StatesList[StepCounter].State == 1)
             {
+                Vector3 PosRight = ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.position;
+                Vector3 PosLeft = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.position;
+
                 //Move Elements
-                StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], ArrayListGraphic[StatesList[StepCounter].RightElementIndex], StopSeconds * 0.5f));
-                StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], StopSeconds * 0.5f));
+                StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], PosRight, StopSeconds * 0.5f));
+                StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], PosLeft, StopSeconds * 0.5f));
 
                 //Routine that waits for time and highlights the text of the running code
                 StartCoroutine(WaitTimeSwap(StopSeconds));
@@ -259,9 +262,12 @@ public class Bubble : MonoBehaviour
                             ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
                             ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
 
-                            //Move elements
-                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], ArrayListGraphic[StatesList[StepCounter].RightElementIndex], StopSeconds * 0.5f));
-                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], StopSeconds * 0.5f));
+                            Vector3 PosRight = ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.position;
+                            Vector3 PosLeft = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.position;
+
+                            //Move Elements
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], PosRight, StopSeconds * 0.5f));
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], PosLeft, StopSeconds * 0.5f));
 
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeSwapStep(StopSeconds));
@@ -312,9 +318,12 @@ public class Bubble : MonoBehaviour
                             ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
                             ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = HighlightedColor;
 
-                            //Move elements
-                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], ArrayListGraphic[StatesList[StepCounter].RightElementIndex], StopSeconds * 0.5f));
-                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], StopSeconds * 0.5f));
+                            Vector3 PosRight = ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.position;
+                            Vector3 PosLeft = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.position;
+
+                            //Move Elements
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], PosRight, StopSeconds * 0.5f));
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], PosLeft, StopSeconds * 0.5f));
 
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeSwapStep(StopSeconds));
@@ -355,13 +364,12 @@ public class Bubble : MonoBehaviour
     }
 
     //Function that allows animate the permutations of the array
-    private IEnumerator MoveToPosition(GameObject initialObject, GameObject finalObject, float timeToMove)
+    private IEnumerator MoveToPosition(GameObject initialObject, Vector3 endPosition, float timeToMove)
     {
         float time = 0f;
         Vector3 startPosition = initialObject.transform.position;
-        Vector3 endPosition = finalObject.transform.position;
 
-        while(time < 1)
+        while (time < 1)
         {
             time += Time.deltaTime / timeToMove;
             initialObject.transform.position = Vector3.Lerp(startPosition, endPosition, time);
