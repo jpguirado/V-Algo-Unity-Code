@@ -204,7 +204,14 @@ public class Bubble : MonoBehaviour
         StopSeconds = SpeedSlider.value;
 
         GameObject auxGameObject;
-        
+
+        //If last step, pause
+        if (StepCounter == StatesList.Count)
+        {
+            Paused = true;
+            PlayPauseImage.sprite = SpritePlay;
+        }
+
         //AutomaticMode
         if (!Paused && Stopped && StepCounter <= (StatesList.Count - 1))
         {
@@ -240,14 +247,14 @@ public class Bubble : MonoBehaviour
         }
 
         //Step Mode
-        if (Paused && Stopped && StepCounter <= (StatesList.Count - 1))
+        if (Stopped)
         {
             //Step Over
             StepOverButton.onClick.AddListener(delegate
             {
                 if (Paused)
                 {
-                    if (!ExecutingStep)
+                    if (!ExecutingStep && StepCounter < (StatesList.Count - 1))
                     {
                         ExecutingStep = true;
 

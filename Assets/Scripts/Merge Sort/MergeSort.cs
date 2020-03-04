@@ -338,6 +338,13 @@ public class MergeSort : MonoBehaviour
         //Get the speed
         StopSeconds = SpeedSlider.value;
 
+        //If last step, pause
+        if (StepCounter == StatesList.Count)
+        {
+            Paused = true;
+            PlayPauseImage.sprite = SpritePlay;
+        }
+
         //Automatic mode
         if (!Paused && Stopped && StepCounter <= (StatesList.Count - 1))
         {
@@ -404,12 +411,12 @@ public class MergeSort : MonoBehaviour
         }
 
         //Step Mode
-        if (Paused && Stopped && StepCounter <= (StatesList.Count))
+        if (Stopped )
         {
             //Step Over
             StepOverButton.onClick.AddListener(delegate
             {
-                if (Paused)
+                if (Paused && StepCounter < (StatesList.Count))
                 {
                     if (!ExecutingStep)
                     {
@@ -546,8 +553,9 @@ public class MergeSort : MonoBehaviour
                                 }
                             }
 
-                            //Restore the color
-                            ArrayListGraphic[index].transform.Find("Bar").GetComponent<Image>().color = StatesList[StepCounter].Color;
+                            //Restore the color only if the previous step is 0
+                            if (StatesList[StepCounter-1].State != 0)
+                                ArrayListGraphic[index].transform.Find("Bar").GetComponent<Image>().color = StatesList[StepCounter].Color;
 
                             //Target position - 100.0f to move down
                             Vector3 PositionToMove = OriginalPositions[index].transform.position;

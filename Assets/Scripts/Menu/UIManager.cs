@@ -19,7 +19,7 @@ public class UIManager : MonoBehaviour
         
     }
 
-    //Click en el boton de algoritmo de la burbuja
+    //On click Bubble
     public void OnClickBurbuja()
     {
         MainMenu.SetActive(false);
@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 20;
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos= 10;
     }
-    //Click en el boton de algoritmo de la burbuja
+    //On click merge sort
     public void OnClickMergeSort()
     {
         MainMenu.SetActive(false);
@@ -42,13 +42,25 @@ public class UIManager : MonoBehaviour
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
     }
 
-    //Click en el boton de algoritmo de la burbuja
+    //On Click Quick Sort
     public void OnClickQuickSort()
     {
         MainMenu.SetActive(false);
         MenuConfiguracionEjecucion.SetActive(true);
 
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "QuickSort";
+        MenuConfiguracion.NumElementos = 10;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 20;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
+    }
+
+    //On Click Selection
+    public void OnClickSelectionSort()
+    {
+        MainMenu.SetActive(false);
+        MenuConfiguracionEjecucion.SetActive(true);
+
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "SelectionSort";
         MenuConfiguracion.NumElementos = 10;
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 20;
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;

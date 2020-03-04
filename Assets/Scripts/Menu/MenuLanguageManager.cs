@@ -6,7 +6,7 @@ using TMPro;
 public class MenuLanguageManager : MonoBehaviour
 {
 
-    public TextMeshProUGUI Bubble, Settings, NumberElements, Execute, ReturnConfigExecution, Language, ReturnSettings;
+    public TextMeshProUGUI Bubble, Settings, NumberElements, Execute, ReturnConfigExecution, Language, ReturnSettings, Selection;
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +39,7 @@ public class MenuLanguageManager : MonoBehaviour
             Execute.text = "EJECUTAR";
             ReturnConfigExecution.text = ReturnSettings.text = "VOLVER";
             Language.text = "IDIOMA";
+            Selection.text = "SELECCIÓN";
         }
 
         if (language == "ENGLISH")
@@ -49,7 +50,7 @@ public class MenuLanguageManager : MonoBehaviour
             Execute.text = "EXECUTE";
             ReturnConfigExecution.text = ReturnSettings.text = "RETURN";
             Language.text = "LANGUAGE";
+            Selection.text = "SELECTION";
         }
-
     }
 }
