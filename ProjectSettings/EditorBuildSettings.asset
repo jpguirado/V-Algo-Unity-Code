@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SelectionSort.unity
     guid: 99d9ab1a9e3a67f4e8800a89926c3649
+  - enabled: 1
+    path: Assets/Scenes/InsertionSort.unity
+    guid: d7d64a5163d0d62448e97085125b098d
   m_configObjects: {}

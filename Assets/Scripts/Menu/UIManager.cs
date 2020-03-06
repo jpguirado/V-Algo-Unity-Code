@@ -66,6 +66,18 @@ public class UIManager : MonoBehaviour
         MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
     }
 
+    //On Click Insertion
+    public void OnClickInsertionSort()
+    {
+        MainMenu.SetActive(false);
+        MenuConfiguracionEjecucion.SetActive(true);
+
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().AlgoritmoAEjecutar = "InsertionSort";
+        MenuConfiguracion.NumElementos = 10;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MaxNumElementos = 20;
+        MenuConfiguracionEjecucion.GetComponent<MenuConfiguracion>().MinNumElementos = 10;
+    }
+
     //Click en el boton de algoritmo de la burbuja
     public void OnClickSettings()
     {
