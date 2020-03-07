@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -65,16 +64,16 @@ public class InsertionSort : MonoBehaviour
     public Sprite SpriteCodeImage;
 
     //Sprite image min index 1
-    public Sprite SpriteCodeMinIndex1;
+    public Sprite SpriteCodeFirstElementSorted0;
 
     //Sprite image min index 2
-    public Sprite SpriteCodeMinIndex2;
+    public Sprite SpriteCodeKeyMoveDown;
 
     //Sprite image number compare
-    public Sprite SpriteCodeNumberCompare;
+    public Sprite SpriteCodeSwapElements;
 
     //Sprite image swap
-    public Sprite SpriteCodeSwap;
+    public Sprite SpriteCodeMoveUpKey;
 
     //Determines if one step is being executed
     private bool ExecutingStep;
@@ -92,7 +91,7 @@ public class InsertionSort : MonoBehaviour
     public Slider SpeedSlider;
 
     //Language Manager
-    public SelectionSortLanguageManager SelectionSortLanguageManager;
+    public InsertionSortLanguageManager InsertionSortLanguageManager;
 
     //Distance that will the elements move in the state 1
     public float MoveDownDistance;
@@ -125,7 +124,7 @@ public class InsertionSort : MonoBehaviour
     void Start()
     {
         //Set the language
-        //SelectionSortLanguageManager.SetLanguage();
+        InsertionSortLanguageManager.SetLanguage();
 
         ////Set variables
         Stopped = true;
@@ -140,10 +139,8 @@ public class InsertionSort : MonoBehaviour
             NElements = 10;
         }
 
-        NElements = 10;
-
-        //ArrayOriginal = CreateRandomArray(NElements);
-        ArrayOriginal = new int[] { 6, 5, 3, 2, 1, 8, 7, 10, 9, 4 };
+        ArrayOriginal = CreateRandomArray(NElements);
+        //ArrayOriginal = new int[] { 6, 5, 3, 2, 1, 8, 7, 10, 9, 4 };
         InstantiateGraphicArray(ArrayOriginal, GetScale(), true);
         ExecuteAndCreateStates(ArrayOriginal);
     }
@@ -176,14 +173,15 @@ public class InsertionSort : MonoBehaviour
 
             while(j >= 0 && ArraySorted[j] > key)
             {
-                ArraySorted[j + 1] = ArraySorted[j];
-                //Highlight and move down the key
+                //Swap elements
                 StatesList.Add(new InsertionSortState()
                 {
                     State = 2,
                     IndexToMoveKey = j,
-                    Key = key
+                    Key = key,
+                    RestoreElement = ArraySorted[j + 1]
                 });
+                ArraySorted[j + 1] = ArraySorted[j];
                 j = j - 1;
             }
 
@@ -192,7 +190,8 @@ public class InsertionSort : MonoBehaviour
             {
                 State = 3,
                 IndexToMoveKey = j + 1,
-                Key = key
+                Key = key,
+                RestoreElement = ArraySorted[j+1]
             });
             ArraySorted[j + 1] = key;
         }
@@ -378,7 +377,7 @@ public class InsertionSort : MonoBehaviour
                         if (StatesList[StepCounter].State == 0)
                         {
                             //Routine that waits for time and highlights the text of the running code
-                            StartCoroutine(WaitTimeHighlightMinSortedElement(0, false, false));
+                            StartCoroutine(WaitTimeHighlightMinSortedElement(0, false, true));
                         }
 
                         //If state is move down the key and highlight it
@@ -391,7 +390,7 @@ public class InsertionSort : MonoBehaviour
                             StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].IndexToHighlight], PositionToMove, StopSeconds * 0.5f));
 
                             //Routine that waits for time and highlights the text of the running code
-                            StartCoroutine(WaitTimeHighlightKey(StopSeconds, false, false));
+                            StartCoroutine(WaitTimeHighlightKey(StopSeconds, true, false));
                         }
 
                         //If state is swap positions
@@ -412,7 +411,7 @@ public class InsertionSort : MonoBehaviour
                             ArrayListGraphic[StatesList[StepCounter].IndexToMoveKey + 1] = ArrayListGraphic[StatesList[StepCounter].IndexToMoveKey];
 
                             //Routine that waits for time and highlights the text of the running code
-                            StartCoroutine(WaitTimeSwapPositions(StopSeconds, false, false));
+                            StartCoroutine(WaitTimeSwapPositions(StopSeconds, false, true));
 
 
                         }
@@ -430,84 +429,93 @@ public class InsertionSort : MonoBehaviour
                             //Make The changes
                             ArrayListGraphic[StatesList[StepCounter].IndexToMoveKey] = key;
 
-                            StartCoroutine(WaitTimeHighlightMinSortedElement(StopSeconds, false, false));
+                            StartCoroutine(WaitTimeHighlightMinSortedElement(StopSeconds, false, true));
                         }
                         StepCounter += 1;
                     }
                 }
             });
 
-            ////Step back
-            //StepBackButton.onClick.AddListener(delegate
-            //{
-            //    if (Paused)
-            //    {
-            //        if (!ExecutingStep && StepCounter > 0)
-            //        {
-            //            ExecutingStep = true;
-            //            StepCounter -= 1;
+            //Step back
+            StepBackButton.onClick.AddListener(delegate
+            {
+                if (Paused)
+                {
+                    if (!ExecutingStep && StepCounter > 0)
+                    {
+                        ExecutingStep = true;
+                        StepCounter -= 1;
 
-            //            CleanHighLightedCode();
+                        CleanHighLightedCode();
 
-            //            //If state is highlight pivot
-            //            if (StatesList[StepCounter].State == 0)
-            //            {
-            //                //CodeImage.sprite = SpriteCodePivot0;
-            //                //Routine that waits for time and highlights the text of the running code
-            //                StartCoroutine(WaitTimeHighlightMinIndex(0, true, true));
-            //            }
+                        //If state is highlight first sorted element
+                        if (StatesList[StepCounter].State == 0)
+                        {
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeHighlightMinSortedElement(0, true, true));
+                        }
 
-            //            //If state is highlight number to compare
-            //            if (StatesList[StepCounter].State == 1)
-            //            {
-            //                //CodeImage.sprite = SpriteCodeLeftHalf1;
-            //                //Routine that waits for time and highlights the text of the running code
-            //                StartCoroutine(WaitTimeHighlightNumberToCompare(0, true, true));
-            //            }
+                        //If state is move down the key and highlight it
+                        if (StatesList[StepCounter].State == 1)
+                        {
+                            Vector3 PositionToMove = OriginalPositions[StatesList[StepCounter].IndexToHighlight].transform.position;
 
-            //            //If state is highlight first index unsorted
-            //            if (StatesList[StepCounter].State == 2)
-            //            {
-            //                //CodeImage.sprite = SpriteCodeRightHalf2;
-            //                //Routine that waits for time and highlights the text of the running code
-            //                StartCoroutine(WaitTimeHighlightFirstUnsortedPosition(0, true, true));
-            //            }
+                            //Move the element
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].IndexToHighlight], PositionToMove, StopSeconds * 0.5f));
 
-            //            //If state is elements swap
-            //            if (StatesList[StepCounter].State == 3)
-            //            {
-            //                Vector3 PosRight = ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.position;
-            //                Vector3 PosLeft = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.position;
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeHighlightKey(StopSeconds, true, true));
+                        }
 
-            //                //Move Elements
-            //                StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].LeftElementIndex], PosRight, StopSeconds * 0.8f));
-            //                StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].RightElementIndex], PosLeft, StopSeconds * 0.8f));
+                        //If state is swap positions
+                        if (StatesList[StepCounter].State == 2)
+                        {
+                            GameObject key = GameObject.Find(StatesList[StepCounter].Key.ToString());
 
-            //                //Routine that waits for time and highlights the text of the running code
-            //                StartCoroutine(WaitTimeSwap(StopSeconds, true));
+                            //Move key to right
+                            Vector3 PositionToMoveKey = OriginalPositions[StatesList[StepCounter].IndexToMoveKey + 1].transform.position;
+                            PositionToMoveKey.y = PosYReferenceMoveDown.position.y;
+                            StartCoroutine(MoveToPosition(key, PositionToMoveKey, StopSeconds * 0.5f));
 
-            //                //Make changes to our ArrayListGraphic
-            //                auxGameObject = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex];
-            //                ArrayListGraphic[StatesList[StepCounter].LeftElementIndex] = ArrayListGraphic[StatesList[StepCounter].RightElementIndex];
-            //                ArrayListGraphic[StatesList[StepCounter].RightElementIndex] = auxGameObject;
-            //            }
 
-            //            //If state is highlight the element in correct position
-            //            if (StatesList[StepCounter].State == 4)
-            //            {
-            //                //Routine that waits for time and highlights the text of the running code
-            //                StartCoroutine(WaitTimeHighlightElementCorrectPosition(0, true));
-            //            }
-            //        }
-            //    }
-            //});
+                            //Move other element to right
+                            Vector3 PositionToMoveOtherElement = OriginalPositions[StatesList[StepCounter].IndexToMoveKey].transform.position;
+                            StartCoroutine(MoveToPosition(ArrayListGraphic[StatesList[StepCounter].IndexToMoveKey], PositionToMoveOtherElement, StopSeconds * 0.5f));
+
+                            ArrayListGraphic[StatesList[StepCounter].IndexToMoveKey + 1] = GameObject.Find(StatesList[StepCounter].RestoreElement.ToString());
+
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeSwapPositions(StopSeconds, true, true));
+
+
+                        }
+
+                        //If state move up key
+                        if (StatesList[StepCounter].State == 3)
+                        {
+                            GameObject key = GameObject.Find(StatesList[StepCounter].Key.ToString());
+
+                            Vector3 PositionToMove = OriginalPositions[StatesList[StepCounter].IndexToMoveKey].transform.position;
+                            PositionToMove.y = PosYReferenceMoveDown.position.y;
+
+                            //Move the element
+                            StartCoroutine(MoveToPosition(key, PositionToMove, StopSeconds * 0.5f));
+
+                            StartCoroutine(WaitTimeHighlightMinSortedElement(StopSeconds, true, true));
+
+                            //Restore changes
+                            ArrayListGraphic[StatesList[StepCounter].IndexToMoveKey] = GameObject.Find(StatesList[StepCounter].RestoreElement.ToString());
+                        }
+                    }
+                }
+            });
         }
     }
 
     //Clean the highlighted code
     private void CleanHighLightedCode()
     {
-        //CodeImage.sprite = SpriteCodeImage;
+        CodeImage.sprite = SpriteCodeImage;
     }
 
     //Function that allows animate the permutations of the array
@@ -530,7 +538,7 @@ public class InsertionSort : MonoBehaviour
         Stopped = false;
         int step = StepCounter;
 
-        CodeImage.sprite = SpriteCodeSwap;
+        CodeImage.sprite = SpriteCodeMoveUpKey;
 
         yield return new WaitForSeconds(waitTime);
 
@@ -547,40 +555,31 @@ public class InsertionSort : MonoBehaviour
         Stopped = false;
 
         int step = StepCounter;
-
-        //if (StatesList[step].MinIndexType == 1)
-        //    CodeImage.sprite = SpriteCodeMinIndex1;
-        //else
-        //    CodeImage.sprite = SpriteCodeMinIndex2;
-
-        //for (int i = 0; i < ArrayListGraphic.Count; i++)
-        //{
-        //    if (!ElementsPlaced[i])
-        //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //}
-
-        //if (!stepBack)
-        //    ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-        //else
-        //{
-        //    if (step > 0)
-        //        if (StatesList[step - 1].State == 1)
-        //        {
-        //            ArrayListGraphic[StatesList[step - 1].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = NumberToCompareColor;
-        //            ArrayListGraphic[StatesList[step - 1].MinIndex].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-        //        }
-        //}
-
         if (StatesList[step].State == 0)
-            ArrayListGraphic[StatesList[step].IndexToHighlight].transform.Find("Bar").GetComponent<Image>().color = SortedColor;
+            CodeImage.sprite = SpriteCodeFirstElementSorted0;
         else
-            ArrayListGraphic[StatesList[step].IndexToMoveKey].transform.Find("Bar").GetComponent<Image>().color = SortedColor;
+            CodeImage.sprite = SpriteCodeMoveUpKey;
+
+        if (!stepBack)
+        {
+            if (StatesList[step].State == 0)
+                ArrayListGraphic[StatesList[step].IndexToHighlight].transform.Find("Bar").GetComponent<Image>().color = SortedColor;
+            else
+                ArrayListGraphic[StatesList[step].IndexToMoveKey].transform.Find("Bar").GetComponent<Image>().color = SortedColor;
+        }
+        else
+        {
+            if (StatesList[step].State == 0)
+                ArrayListGraphic[StatesList[step].IndexToHighlight].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
+            else
+                ArrayListGraphic[StatesList[step].IndexToMoveKey].transform.Find("Bar").GetComponent<Image>().color = KeyColor;
+        }
 
 
         yield return new WaitForSeconds(waitTime);
 
-        //if (!stepMode)
-        //    CodeImage.sprite = SpriteCodeImage;
+        if (!stepMode)
+            CodeImage.sprite = SpriteCodeImage;
 
         Stopped = true;
         ExecutingStep = false;
@@ -592,7 +591,7 @@ public class InsertionSort : MonoBehaviour
 
         int step = StepCounter;
 
-        //CodeImage.sprite = SpriteCodeSwap;
+        CodeImage.sprite = SpriteCodeSwapElements;
 
         //if (stepMode)
         //{
@@ -618,8 +617,8 @@ public class InsertionSort : MonoBehaviour
 
         yield return new WaitForSeconds(waitTime);
 
-        //if (!stepMode)
-        //    CodeImage.sprite = SpriteCodeImage;
+        if (!stepMode)
+            CodeImage.sprite = SpriteCodeImage;
 
         Stopped = true;
         ExecutingStep = false;
@@ -698,16 +697,18 @@ public class InsertionSort : MonoBehaviour
         //if (!stepBack)
         //    ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = NumberToCompareColor;
 
-        //CodeImage.sprite = SpriteCodeNumberCompare;
+        CodeImage.sprite = SpriteCodeKeyMoveDown;
 
-
-        ArrayListGraphic[StatesList[step].IndexToHighlight].transform.Find("Bar").GetComponent<Image>().color = KeyColor;
+        if(!stepBack)
+            ArrayListGraphic[StatesList[step].IndexToHighlight].transform.Find("Bar").GetComponent<Image>().color = KeyColor;
+        else
+            ArrayListGraphic[StatesList[step].IndexToHighlight].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
 
         yield return new WaitForSeconds(waitTime);
 
 
-        //if (!stepMode)
-        //    CodeImage.sprite = SpriteCodeImage;
+        if (!stepMode)
+            CodeImage.sprite = SpriteCodeImage;
 
         Stopped = true;
         ExecutingStep = false;
@@ -821,6 +822,8 @@ public class InsertionSortState
     public int State;
 
     public int IndexToHighlight;
+
+    public int RestoreElement;
 
     public int IndexToMoveKey;
 
