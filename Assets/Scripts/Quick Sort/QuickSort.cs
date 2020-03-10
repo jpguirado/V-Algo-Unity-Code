@@ -53,11 +53,8 @@ public class QuickSort : MonoBehaviour
     //Step Over Button
     public Button StepOverButton;
 
-    //Step Over button
+    //Step Back Button
     public Button StepBackButton;
-
-    //Restart execution button
-    public Button RestartButton;
 
     //Image of the code
     public Image CodeImage;
@@ -246,6 +243,7 @@ public class QuickSort : MonoBehaviour
             else
                 intercambiar(array, i_crec, i_decrec,1);
         }
+
         intercambiar(array, ini, i_decrec,2);
 
         return new PivoteResult()
@@ -273,7 +271,7 @@ public class QuickSort : MonoBehaviour
         {
             if (b - a == 1)//Both in correct positions
             {
-                //Hihglitgh the elemts in the correct position
+                //Highlitgh the elemts in the correct position
                 StatesList.Add(new QuickSortState()
                 {
                     State = 4,
@@ -281,7 +279,7 @@ public class QuickSort : MonoBehaviour
                     SwapType = type
                 });
                 ElementsPlaced[b] = true;
-                //Hihglitgh the elemts in the correct position
+                //Highlitgh the elemts in the correct position
                 StatesList.Add(new QuickSortState()
                 {
                     State = 4,
@@ -293,7 +291,7 @@ public class QuickSort : MonoBehaviour
             }
             else
             {
-                //Hihglitgh the elemts in the correct position
+                //Highlitgh the elemts in the correct position
                 StatesList.Add(new QuickSortState()
                 {
                     State = 4,
@@ -330,7 +328,6 @@ public class QuickSort : MonoBehaviour
             //Restore the scale
             if (currentScale != Vector3.zero)
                 instantiated.transform.localScale = currentScale;
-
 
             instantiated.GetComponentInChildren<TextMeshProUGUI>().text = array[i].ToString();
             RectTransform BarHeight = instantiated.transform.Find("Bar").GetComponent<RectTransform>();
@@ -432,7 +429,6 @@ public class QuickSort : MonoBehaviour
                 StartCoroutine(WaitTimeHighlightElementCorrectPosition(StopSeconds,false));
             }
 
-
             StepCounter += 1;
         }
 
@@ -508,6 +504,7 @@ public class QuickSort : MonoBehaviour
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlightElementCorrectPosition(0,true));
                         }
+
                         StepCounter += 1;
                     }
                 }
@@ -811,7 +808,7 @@ public class QuickSort : MonoBehaviour
         }
     }
 
-    //Termina la ejecución
+    //End execution
     public void EndExecution()
     {
         Paused = true;
@@ -832,7 +829,7 @@ public class QuickSort : MonoBehaviour
 
         InstantiateGraphicArray(ArraySorted, escalaActual, false);
 
-        //we color all the array elements of the final color and all the elements are sorted
+        //We color all the array elements of the final color and all the elements are sorted
         for (int i = 0; i < ArrayListGraphic.Count; i++)
         {
             ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = FinalPositionColor;
@@ -869,6 +866,14 @@ public class PivoteResult
 //Class that represent the states of the execution
 public class QuickSortState
 {
+    /*
+     * State 0 - Highlight pivot
+     * State 1 - Highlight left half
+     * State 2 - Highlight right half
+     * State 3 - Swap element
+     * State 4 - Highlight sorted number
+     */
+
     public int State;
 
     //Highlighted pivot - 0 && 4

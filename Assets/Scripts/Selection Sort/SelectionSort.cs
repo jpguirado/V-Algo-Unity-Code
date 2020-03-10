@@ -23,14 +23,8 @@ public class SelectionSort : MonoBehaviour
     //Array graphic element GameObject
     public GameObject ArrayGraphicElement;
 
-    //Game Object empty that will represent the original position of the graphic array elements
-    public GameObject OriginalPositionPrefab;
-
     //Lista of the array graphic elements
     public List<GameObject> ArrayListGraphic;
-
-    //List with the original positions of the graphic elemets of the array. This list will remain immutable
-    public List<GameObject> OriginalPositions;
 
     //Determine if the execution is paused
     public bool Paused;
@@ -53,11 +47,8 @@ public class SelectionSort : MonoBehaviour
     //Step Over Button
     public Button StepOverButton;
 
-    //Step Over button
+    //Step Back button
     public Button StepBackButton;
-
-    //Restart execution button
-    public Button RestartButton;
 
     //Image of the code
     public Image CodeImage;
@@ -95,12 +86,6 @@ public class SelectionSort : MonoBehaviour
     //Language Manager
     public SelectionSortLanguageManager SelectionSortLanguageManager;
 
-    //Distance that will the elements move in the state 1
-    public float MoveDownDistance;
-
-    //Reference of Y position to move down the array graphic elements
-    public RectTransform PosYReferenceMoveDown;
-
     //Distance of displacement of the bars with respect to the center
     public float LateralShift;
 
@@ -112,9 +97,6 @@ public class SelectionSort : MonoBehaviour
 
     //Color to higlight number to compare
     public Color NumberToCompareColor;
-
-    //Right Half Color
-    public Color RightHalfColor;
 
     //The element is in his sorted position
     public Color FinalPositionColor;
@@ -142,7 +124,6 @@ public class SelectionSort : MonoBehaviour
         }
 
         ArrayOriginal = CreateRandomArray(NElements);
-        //ArrayOriginal = new int[] { 6, 5, 3, 2, 1, 8, 7, 10, 9, 4 };
         InstantiateGraphicArray(ArrayOriginal, GetScale(), true);
         ExecuteAndCreateStates(ArrayOriginal);
     }
@@ -243,7 +224,6 @@ public class SelectionSort : MonoBehaviour
             //Restore the scale
             if (currentScale != Vector3.zero)
                 instantiated.transform.localScale = currentScale;
-
 
             instantiated.GetComponentInChildren<TextMeshProUGUI>().text = array[i].ToString();
             RectTransform BarHeight = instantiated.transform.Find("Bar").GetComponent<RectTransform>();
@@ -561,6 +541,7 @@ public class SelectionSort : MonoBehaviour
         ExecutingStep = false;
     }
 
+    //Wait time and highlighted the first unsorted position
     private IEnumerator WaitTimeHighlightFirstUnsortedPosition(float waitTime, bool stepBack, bool stepMode)
     {
         Stopped = false;
@@ -601,7 +582,7 @@ public class SelectionSort : MonoBehaviour
     }
 
 
-    //Wait time and highlighted the pivot
+    //Wait time and highlighted the element in correct position
     private IEnumerator WaitTimeHighlightElementCorrectPosition(float waitTime, bool stepBack)
     {
         Stopped = false;
@@ -639,8 +620,6 @@ public class SelectionSort : MonoBehaviour
             }
         }
 
-
-
         yield return new WaitForSeconds(waitTime);
 
         Stopped = true;
@@ -676,7 +655,6 @@ public class SelectionSort : MonoBehaviour
         CodeImage.sprite = SpriteCodeNumberCompare;
 
         yield return new WaitForSeconds(waitTime);
-
 
         if (!stepMode)
             CodeImage.sprite = SpriteCodeImage;
@@ -733,7 +711,7 @@ public class SelectionSort : MonoBehaviour
         }
     }
 
-    //Termina la ejecución
+    //End execution
     public void EndExecution()
     {
         Paused = true;
@@ -744,7 +722,6 @@ public class SelectionSort : MonoBehaviour
 
         Vector3 escalaActual = ArrayListGraphic[0].transform.localScale;
 
-
         for (int i = 0; i < ArrayListGraphic.Count; i++)
         {
             Destroy(ArrayListGraphic[i]);
@@ -754,7 +731,7 @@ public class SelectionSort : MonoBehaviour
 
         InstantiateGraphicArray(ArraySorted, escalaActual, false);
 
-        //we color all the array elements of the final color and all the elements are sorted
+        //We color all the array elements of the final color and all the elements are sorted
         for (int i = 0; i < ArrayListGraphic.Count; i++)
         {
             ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = FinalPositionColor;

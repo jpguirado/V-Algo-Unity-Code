@@ -61,9 +61,6 @@ public class MergeSort : MonoBehaviour
     //Step Over button
     public Button StepBackButton;
 
-    //Restart execution button
-    public Button RestartButton;
-
     //Image of the code
     public Image CodeImage;
 
@@ -777,7 +774,7 @@ public class MergeSort : MonoBehaviour
         InstantiateGraphicArray(ArrayOriginal, localScale,false);
     }
 
-    //Termina la ejecución
+    //End execution
     public void EndExecution()
     {
         Paused = true;
@@ -834,18 +831,21 @@ public class MergeSort : MonoBehaviour
 //Class that represent the states of the execution
 public class MergeSortState
 {
-    //0 to remark elements, 1 to move down, 2 to move up
+    /*
+     * State 0 - Highlight elements in this iteration
+     * State 1 - Move element down
+     * State 2 - Move elements up
+     */
+
     public int State { get; set; }
 
-    //State 0
     //Start and end index to know what elements are involved
     public int StartIndex { get; set; }
+
     public int EndIndex { get; set; }
 
     public Color Color;
 
-
-    //State 1
     //Number of the array to move down
     public int NumberToMove { get; set; }
 

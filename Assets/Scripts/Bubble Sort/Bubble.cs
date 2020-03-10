@@ -51,9 +51,6 @@ public class Bubble : MonoBehaviour
     //Step Back Button
     public Button StepBackButton;
 
-    //Restart Button
-    public Button RestartButton;
-
     //Code Image
     public Image CodeImage;
 
@@ -532,14 +529,17 @@ public class Bubble : MonoBehaviour
 //Class that represent the states of the execution
 public class BubbleState
 {
-    //Determina si se esta ejecutando el if o el swap
-    //0 para el if, 1 para el swap
+    /*
+     * State 0 - If
+     * State 1 - Swap
+     */
+
     public int State { get; set; }
 
-    //Elemento izquierda
+    //Left Element
     public int LeftElementIndex { get; set; }
 
-    //Elemento derecha
+    //Right Element
     public int RightElementIndex { get; set; }
 
 }

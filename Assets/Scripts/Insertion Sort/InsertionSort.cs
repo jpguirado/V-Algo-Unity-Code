@@ -54,9 +54,6 @@ public class InsertionSort : MonoBehaviour
     //Step Over button
     public Button StepBackButton;
 
-    //Restart execution button
-    public Button RestartButton;
-
     //Image of the code
     public Image CodeImage;
 
@@ -140,7 +137,6 @@ public class InsertionSort : MonoBehaviour
         }
 
         ArrayOriginal = CreateRandomArray(NElements);
-        //ArrayOriginal = new int[] { 6, 5, 3, 2, 1, 8, 7, 10, 9, 4 };
         InstantiateGraphicArray(ArrayOriginal, GetScale(), true);
         ExecuteAndCreateStates(ArrayOriginal);
     }
@@ -156,7 +152,6 @@ public class InsertionSort : MonoBehaviour
             State = 0,
             IndexToHighlight = 0
         });
-
 
         for (int i = 1; i < ArraySorted.Length; i++)
         {
@@ -195,24 +190,7 @@ public class InsertionSort : MonoBehaviour
             });
             ArraySorted[j + 1] = key;
         }
-        //this.ArraySorted = (int[])ArraySorted.Clone();
     }
-
-    //private void swap(int[] array, int a, int b)
-    //{
-    //    if (a != b)
-    //    {
-    //        StatesList.Add(new SelectionSortState()
-    //        {
-    //            State = 3,
-    //            LeftElementIndex = a,
-    //            RightElementIndex = b
-    //        });
-    //        int aux = array[a];
-    //        array[a] = array[b];
-    //        array[b] = aux;
-    //    }
-    //}
 
     //Instatiate the graphic array elements and put them in a list
     private void InstantiateGraphicArray(int[] array, Vector3 currentScale, bool firstTime)
@@ -235,7 +213,6 @@ public class InsertionSort : MonoBehaviour
             //Restore the scale
             if (currentScale != Vector3.zero)
                 instantiated.transform.localScale = currentScale;
-
 
             instantiated.GetComponentInChildren<TextMeshProUGUI>().text = array[i].ToString();
             RectTransform BarHeight = instantiated.transform.Find("Bar").GetComponent<RectTransform>();
@@ -286,8 +263,6 @@ public class InsertionSort : MonoBehaviour
         //Get the speed
         StopSeconds = SpeedSlider.value;
 
-        GameObject auxGameObject;
-
         //If last step, pause
         if (StepCounter == StatesList.Count)
         {
@@ -337,8 +312,6 @@ public class InsertionSort : MonoBehaviour
 
                 //Routine that waits for time and highlights the text of the running code
                 StartCoroutine(WaitTimeSwapPositions(StopSeconds, false, false));
-                
-
             }
 
             //If state move up key
@@ -412,8 +385,6 @@ public class InsertionSort : MonoBehaviour
 
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeSwapPositions(StopSeconds, false, true));
-
-
                         }
 
                         //If state move up key
@@ -532,24 +503,7 @@ public class InsertionSort : MonoBehaviour
         }
     }
 
-    //Wait time and highlighted the part of swap elements
-    private IEnumerator WaitTimeSwap(float waitTime, bool stepMode)
-    {
-        Stopped = false;
-        int step = StepCounter;
-
-        CodeImage.sprite = SpriteCodeMoveUpKey;
-
-        yield return new WaitForSeconds(waitTime);
-
-        if (!stepMode)
-            CodeImage.sprite = SpriteCodeImage;
-
-        Stopped = true;
-        ExecutingStep = false;
-    }
-
-    //Wait time and highlighted the min index
+    //Wait time and highlighted the min sorted element
     private IEnumerator WaitTimeHighlightMinSortedElement(float waitTime, bool stepBack, bool stepMode)
     {
         Stopped = false;
@@ -575,7 +529,6 @@ public class InsertionSort : MonoBehaviour
                 ArrayListGraphic[StatesList[step].IndexToMoveKey].transform.Find("Bar").GetComponent<Image>().color = KeyColor;
         }
 
-
         yield return new WaitForSeconds(waitTime);
 
         if (!stepMode)
@@ -588,114 +541,20 @@ public class InsertionSort : MonoBehaviour
     private IEnumerator WaitTimeSwapPositions(float waitTime, bool stepBack, bool stepMode)
     {
         Stopped = false;
-
-        int step = StepCounter;
-
         CodeImage.sprite = SpriteCodeSwapElements;
-
-        //if (stepMode)
-        //{
-        //    for (int i = 0; i < ArrayListGraphic.Count; i++)
-        //    {
-        //        if (ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color == NumberToCompareColor)
-        //            ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //    }
-        //    if (stepBack)
-        //    {
-        //        ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //        if (step > 0)
-        //            if (StatesList[step - 1].State == 1)
-        //            {
-        //                ArrayListGraphic[StatesList[step - 1].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = NumberToCompareColor;
-        //                ArrayListGraphic[StatesList[step - 1].MinIndex].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-        //            }
-        //    }
-        //}
-
-        //if (!stepBack)
-        //    ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-
         yield return new WaitForSeconds(waitTime);
-
         if (!stepMode)
             CodeImage.sprite = SpriteCodeImage;
-
         Stopped = true;
         ExecutingStep = false;
     }
 
-
-    //Wait time and highlighted the pivot
-    private IEnumerator WaitTimeHighlightElementCorrectPosition(float waitTime, bool stepBack)
-    {
-        Stopped = false;
-
-        int step = StepCounter;
-
-        //CodeImage.sprite = SpriteCodeSwap;
-
-        ////Set the element to no sorted
-        //ElementsPlaced[StatesList[step].indexToHighlight] = false;
-
-        ////Restore colors
-        //for (int i = 0; i < ArrayListGraphic.Count; i++)
-        //{
-        //    if (!ElementsPlaced[i])
-        //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //}
-
-        ////Highlight Element in correct position
-        //if (!stepBack)
-        //{
-        //    ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = SortedColor;
-        //    ElementsPlaced[StatesList[step].indexToHighlight] = true;
-        //}
-        //else
-        //{
-        //    if (step > 0 && StatesList[step - 1].State == 3)
-        //    {
-        //        ArrayListGraphic[StatesList[step - 1].LeftElementIndex].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-        //        ArrayListGraphic[StatesList[step - 1].RightElementIndex].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-        //    }
-        //    else if (step > 0 && StatesList[step - 1].State == 2)
-        //    {
-        //        ArrayListGraphic[StatesList[step - 1].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = MinIndexColor;
-        //    }
-        //}
-
-
-
-        yield return new WaitForSeconds(waitTime);
-
-        Stopped = true;
-        ExecutingStep = false;
-    }
-
-    //Wait time and highlighted the lightNumberToCompare
+    //Wait time and highlighted the key
     private IEnumerator WaitTimeHighlightKey(float waitTime, bool stepMode, bool stepBack)
     {
         Stopped = false;
 
         int step = StepCounter;
-
-        //for (int i = 0; i < ArrayListGraphic.Count; i++)
-        //{
-        //    if (ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color == NumberToCompareColor)
-        //    {
-        //        ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = MainProjectColor;
-        //        break;
-        //    }
-        //}
-
-        //if (stepBack)
-        //{
-        //    if (step > 0)
-        //        if (StatesList[step - 1].State == 1)
-        //            ArrayListGraphic[StatesList[step - 1].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = NumberToCompareColor;
-        //}
-
-        //if (!stepBack)
-        //    ArrayListGraphic[StatesList[step].indexToHighlight].transform.Find("Bar").GetComponent<Image>().color = NumberToCompareColor;
 
         CodeImage.sprite = SpriteCodeKeyMoveDown;
 
