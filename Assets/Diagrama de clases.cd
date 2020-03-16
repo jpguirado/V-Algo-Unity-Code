@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Bubble" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAawAAAEpCIAACIACgEIQDMAUFAAUECCoEAEIIIIAgw=</HashCode>
+      <FileName>Assets\Scripts\Bubble Sort\Bubble.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="BubbleLanguageManager" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="StatesList" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="BubbleState" Collapsed="true">
+    <Position X="3.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Bubble Sort\Bubble.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BubbleLanguageManager" Collapsed="true">
+    <Position X="3.25" Y="1.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAACAAABAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Bubble Sort\BubbleLanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InsertionSort" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAawAAAApCIAACIGCkECQTMAUBACwAgBoEiGKoIJAgg=</HashCode>
+      <FileName>Assets\Scripts\Insertion Sort\InsertionSort.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="InsertionSortLanguageManager" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="StatesList" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="InsertionSortState" Collapsed="true">
+    <Position X="3.25" Y="7.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAEAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAQAAA=</HashCode>
+      <FileName>Assets\Scripts\Insertion Sort\InsertionSort.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InsertionSortLanguageManager" Collapsed="true">
+    <Position X="3.25" Y="8.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAACAAABAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Assets\Scripts\Insertion Sort\InsertionSortLanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MergeSort" Collapsed="true">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAawAAAApCJAICICCiEAQTMAUBhBQAABoEGGIIIIAgg=</HashCode>
+      <FileName>Assets\Scripts\Merge Sort\MergeSort.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="MergeSortLanguageManager" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="StatesList" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="MergeSortState" Collapsed="true">
+    <Position X="3.25" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgEAAAEACAAAIABAAAAhAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Merge Sort\MergeSort.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MergeSortLanguageManager" Collapsed="true">
+    <Position X="3.25" Y="3" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAACAAABAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Merge Sort\MergeSortLanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QuickSort" Collapsed="true">
+    <Position X="0.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAfwCAAApiIAAiICCkEAQTMAUBACRBABoEMGIIMICgg=</HashCode>
+      <FileName>Assets\Scripts\Quick Sort\QuickSort.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="QuickSortLanguageManager" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="StatesList" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="QuickSortState" Collapsed="true">
+    <Position X="3.25" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQEIAAAAAAAAAAAAAAAAAAEAAAAAAAAAACAABAAAAAg=</HashCode>
+      <FileName>Assets\Scripts\Quick Sort\QuickSort.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="QuickSortLanguageManager" Collapsed="true">
+    <Position X="3.25" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAQAACAAAIAAAAACAAAhAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Quick Sort\QuickSortLanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SelectionSort" Collapsed="true">
+    <Position X="0.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>iAewAIAApCIQACICCkEAQDMAUBAAcAABoUKEIIIIAgg=</HashCode>
+      <FileName>Assets\Scripts\Selection Sort\SelectionSort.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="SelectionSortLanguageManager" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="StatesList" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SelectionSortState" Collapsed="true">
+    <Position X="3.25" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAABECAAAA=</HashCode>
+      <FileName>Assets\Scripts\Selection Sort\SelectionSort.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SelectionSortLanguageManager" Collapsed="true">
+    <Position X="3.25" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAACAAAhAAAAAAAAAAAAAAAAQAA=</HashCode>
+      <FileName>Assets\Scripts\Selection Sort\SelectionSortLanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UnityEngine.MonoBehaviour" Collapsed="true">
+    <Position X="5.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="UnityEngine.Behaviour" Collapsed="true">
+    <Position X="5.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="UnityEngine.Component" Collapsed="true">
+    <Position X="5.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="UnityEngine.Object" Collapsed="true">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="MenuAbout" Collapsed="true">
+    <Position X="7.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAAiEAAAAAAAAAACAAAAAAAAAAQAAABAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Menu\MenuAbout.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MenuConfiguracion" Collapsed="true">
+    <Position X="7.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAAAGAAAQgQAABAAAAAAAAAAAAAAAAgCAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Menu\MenuConfiguracion.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MenuLanguageManager" Collapsed="true">
+    <Position X="7.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAEACCAAAAQACAQCAAAAAAAAAAAAAAACAABAQAA=</HashCode>
+      <FileName>Assets\Scripts\Menu\MenuLanguageManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MenuSettings" Collapsed="true">
+    <Position X="7.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAQkAAAAAAAAEAAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Menu\MenuSettings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UIManager" Collapsed="true">
+    <Position X="7.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ggQAACAAACAEIAAAAABCAIAQAAAAACEAAAAAABAAQAA=</HashCode>
+      <FileName>Assets\Scripts\Menu\UIManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
