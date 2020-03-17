@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -61,20 +62,35 @@ public class MergeSort : MonoBehaviour
     //Step Over button
     public Button StepBackButton;
 
-    //Image of the code
-    public Image CodeImage;
+    //Image of the code merge
+    public Image CodeImageMerge;
 
-    //Sprite original code
-    public Sprite SpriteCodeImage;
+    //Sprite original code merge
+    public Sprite SpriteCodeImageMerge;
 
-    //Sprite image remark code
-    public Sprite SpriteCodeRemarkImage;
+    //Sprite image remark code merge
+    public Sprite SpriteCodeRemarkMerge;
 
-    //Sprite image move down code
-    public Sprite SpriteCodeMoveDownImage;
+    //Sprite image move down code merge
+    public Sprite SpriteCodeMoveDownMerge;
 
-    //Sprite image move up code
-    public Sprite SpriteCodeMoveUpImage;
+    //Sprite image move up code merge
+    public Sprite SpriteCodeMoveUpImageMerge;
+
+    //Image of the code mergesort
+    public Image CodeImageMergeSort;
+
+    //Image of the code mergesort 1º mergesort
+    public Sprite SpriteCodeImageMergeSort;
+
+    //Image of the code mergesort 1º mergesort
+    public Sprite SpriteCodeImageMergeSort1mergesort;
+
+    //Image of the code mergesort 2º mergesort
+    public Sprite SpriteCodeImageMergeSort2mergesort;
+
+    //Image of the code mergesort merge
+    public Sprite SpriteCodeImageMergeSortmerge;
 
     //Determines if one step is being executed
     private bool ExecutingStep;
@@ -144,8 +160,29 @@ public class MergeSort : MonoBehaviour
         if (p < r)
         {
             int q = (p + r) / 2;
+
+            //Save the state to highlight the 1 function
+            StatesList.Add(new MergeSortState()
+            {
+                State = 3,
+                FunctionToHighlight = 1
+            });
             mergesort(array, p, q);
+
+            //Save the state to highlight the 1 function
+            StatesList.Add(new MergeSortState()
+            {
+                State = 3,
+                FunctionToHighlight = 2
+            });
             mergesort(array, q + 1, r);
+
+            //Save the state to highlight the 1 function
+            StatesList.Add(new MergeSortState()
+            {
+                State = 3,
+                FunctionToHighlight = 3
+            });
             array = merge(array, p, q, r);
         }
         return array;
@@ -348,7 +385,7 @@ public class MergeSort : MonoBehaviour
             //Remark Elements
             if (StatesList[StepCounter].State == 0)
             {
-                //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
+                //Routine that waits for time and highlights the text of the running code
                 StartCoroutine(WaitTimeRemark(StopSeconds));
             }
 
@@ -404,6 +441,13 @@ public class MergeSort : MonoBehaviour
                 StartCoroutine(WaitTimeMove(StopSeconds,2));
             }
 
+            //Highlight calls in the mergesort function
+            if (StatesList[StepCounter].State == 3)
+            {
+                //Routine that waits for time and highlights the text of the running code
+                StartCoroutine(WaitTimeHighlightFunction(StopSeconds, false));
+            }
+
             StepCounter += 1;
         }
 
@@ -424,7 +468,7 @@ public class MergeSort : MonoBehaviour
                         //Remark Elements
                         if (StatesList[StepCounter].State == 0)
                         {
-                            CodeImage.sprite = SpriteCodeRemarkImage;
+                            CodeImageMerge.sprite = SpriteCodeRemarkMerge;
 
                             //Remark graphic elements of the array
                             for (int i = StatesList[StepCounter].StartIndex; i <= StatesList[StepCounter].EndIndex; i++)
@@ -438,7 +482,7 @@ public class MergeSort : MonoBehaviour
                         //Move elements down
                         if (StatesList[StepCounter].State == 1)
                         {
-                            CodeImage.sprite = SpriteCodeMoveDownImage;
+                            CodeImageMerge.sprite = SpriteCodeMoveDownMerge;
 
                             for (int j = StatesList[StepCounter-1].StartIndex; j <= StatesList[StepCounter-1].EndIndex; j++)
                             {
@@ -477,7 +521,7 @@ public class MergeSort : MonoBehaviour
                         //Move elements up
                         if (StatesList[StepCounter].State == 2)
                         {
-                            CodeImage.sprite = SpriteCodeMoveUpImage;
+                            CodeImageMerge.sprite = SpriteCodeMoveUpImageMerge;
 
                             //We have to do the changes to our ArrayListGraphic
                             //We have to clone the state of the array to our ArrayListGraphic
@@ -501,6 +545,14 @@ public class MergeSort : MonoBehaviour
                             //Rutina que espera el tiempo y resalta el texto del codigo en ejecución
                             StartCoroutine(WaitTimeMoveStep(StopSeconds));
                         }
+
+                        //Highlight calls in the mergesort function
+                        if (StatesList[StepCounter].State == 3)
+                        {
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeHighlightFunction(0, true));
+                        }
+
                         StepCounter += 1;
                     }
                 }
@@ -521,7 +573,7 @@ public class MergeSort : MonoBehaviour
                         //Remark Elements
                         if (StatesList[StepCounter].State == 0)
                         {
-                            CodeImage.sprite = SpriteCodeImage;
+                            CodeImageMerge.sprite = SpriteCodeImageMerge;
 
                             RemarkCodeStepBack(StepCounter);
 
@@ -599,10 +651,44 @@ public class MergeSort : MonoBehaviour
                                 ArrayListGraphic = listaAux;
                             }
                         }
+
+                        //Highlight calls in the mergesort function
+                        if (StatesList[StepCounter].State == 3)
+                        {
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeHighlightFunction(0, true));
+                        }
                     }
                 }
             });
         }
+    }
+
+    //Wait time and highlighted the function
+    private IEnumerator WaitTimeHighlightFunction(float waitTime, bool stepMode)
+    {
+        Stopped = false;
+
+        switch (StatesList[StepCounter].FunctionToHighlight)
+        {
+            case 1:
+                CodeImageMergeSort.sprite = SpriteCodeImageMergeSort1mergesort;
+                break;
+            case 2:
+                CodeImageMergeSort.sprite = SpriteCodeImageMergeSort2mergesort;
+                break;
+            case 3:
+                CodeImageMergeSort.sprite = SpriteCodeImageMergeSortmerge;
+                break;
+        }
+
+        yield return new WaitForSeconds(waitTime);
+
+        if (!stepMode)
+            CodeImageMergeSort.sprite = SpriteCodeImageMergeSort;
+
+        Stopped = true;
+        ExecutingStep = false;
     }
 
     //Highlight the code depending on wich state we go
@@ -614,7 +700,7 @@ public class MergeSort : MonoBehaviour
 
             if (StatesList[contadorPaso].State == 0)
              {
-                CodeImage.sprite = SpriteCodeRemarkImage;
+                CodeImageMerge.sprite = SpriteCodeRemarkMerge;
                 for (int i = StatesList[contadorPaso].StartIndex; i <= StatesList[contadorPaso].EndIndex; i++)
                 {
                     Color HighlightedColor = ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color;
@@ -624,17 +710,18 @@ public class MergeSort : MonoBehaviour
 
             else if (StatesList[contadorPaso].State == 1)
             {
-                CodeImage.sprite = SpriteCodeMoveDownImage;
+                CodeImageMerge.sprite = SpriteCodeMoveDownMerge;
             }
             else if (StatesList[contadorPaso].State == 2)
-                CodeImage.sprite = SpriteCodeMoveUpImage;
+                CodeImageMerge.sprite = SpriteCodeMoveUpImageMerge;
         }
     }
 
     //Clean the highlighted code
     private void CleanHighLightedCode()
     {
-        CodeImage.sprite = SpriteCodeImage;
+        CodeImageMerge.sprite = SpriteCodeImageMerge;
+        CodeImageMergeSort.sprite = SpriteCodeImageMergeSort;
     }
 
     //Function that allows animate the permutations of the array
@@ -657,12 +744,12 @@ public class MergeSort : MonoBehaviour
         Stopped = false;
 
         if (state == 1)
-            CodeImage.sprite = SpriteCodeMoveDownImage;
+            CodeImageMerge.sprite = SpriteCodeMoveDownMerge;
         else
-            CodeImage.sprite = SpriteCodeMoveUpImage;
+            CodeImageMerge.sprite = SpriteCodeMoveUpImageMerge;
         yield return new WaitForSeconds(waitTime);
 
-        CodeImage.sprite = SpriteCodeImage;
+        CodeImageMerge.sprite = SpriteCodeImageMerge;
 
         Stopped = true;
         ExecutingStep = false;
@@ -682,7 +769,7 @@ public class MergeSort : MonoBehaviour
             ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r,HighlightedColor.g,HighlightedColor.b,0.5f);
         }
 
-        CodeImage.sprite = SpriteCodeRemarkImage;
+        CodeImageMerge.sprite = SpriteCodeRemarkMerge;
 
         yield return new WaitForSeconds(waitTime);
 
@@ -693,7 +780,7 @@ public class MergeSort : MonoBehaviour
             ArrayListGraphic[i].transform.Find("Bar").GetComponent<Image>().color = new Color(HighlightedColor.r, HighlightedColor.g, HighlightedColor.b, 1f);
         }
 
-        CodeImage.sprite = SpriteCodeImage;
+        CodeImageMerge.sprite = SpriteCodeImageMerge;
 
         for (int j = StatesList[step].StartIndex; j <= StatesList[step].EndIndex; j++)
         {
@@ -835,6 +922,7 @@ public class MergeSortState
      * State 0 - Highlight elements in this iteration
      * State 1 - Move element down
      * State 2 - Move elements up
+     * State 3 - Highlight calls in the mergesort function
      */
 
     public int State { get; set; }
@@ -857,5 +945,8 @@ public class MergeSortState
 
     //State of the array before changes
     public int[] arrayBeforeChanges;
+
+    //Number of the function in mergesort to highlight
+    public int FunctionToHighlight;
 
 }

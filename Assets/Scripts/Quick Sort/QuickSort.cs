@@ -57,25 +57,40 @@ public class QuickSort : MonoBehaviour
     public Button StepBackButton;
 
     //Image of the code
-    public Image CodeImage;
+    public Image CodeImageQuickSort;
 
     //Sprite original code
-    public Sprite SpriteCodeImage;
+    public Sprite SpriteCodeQuickSort;
+
+    //Sprite original code
+    public Sprite SpriteCodeQuickSortPivote;
+
+    //Sprite original code
+    public Sprite SpriteCodeQuickSort1;
+
+    //Sprite original code
+    public Sprite SpriteCodeQuickSort2;
+
+    //Image of the code
+    public Image CodeImagePivote;
+
+    //Sprite original code
+    public Sprite SpriteCodePivote;
 
     //Sprite image pivot 0
-    public Sprite SpriteCodePivot0;
+    public Sprite SpriteCodePivotePivot0;
 
     //Sprite image left half 1
-    public Sprite SpriteCodeLeftHalf1;
+    public Sprite SpriteCodePivoteLeftHalf1;
 
     //Sprite image right half 2
-    public Sprite SpriteCodeRightHalf2;
+    public Sprite SpriteCodePivoteRightHalf2;
 
     //Sprite image swap 1
-    public Sprite SpriteCodeSwap1;
+    public Sprite SpriteCodePivoteSwap1;
 
     //Sprite image swap 2
-    public Sprite SpriteCodeSwap2;
+    public Sprite SpriteCodePivoteSwap2;
 
     //Determines if one step is being executed
     private bool ExecutingStep;
@@ -181,8 +196,28 @@ public class QuickSort : MonoBehaviour
         PivoteResult result = new PivoteResult();
         if (i < j)
         {
+            //Save the state to highlight the 1 function
+            StatesList.Add(new QuickSortState()
+            {
+                State = 5,
+                FunctionToHighlight = 1
+            });
             result = pivote(array, i, j);
+
+            //Save the state to highlight the 1 function
+            StatesList.Add(new QuickSortState()
+            {
+                State = 5,
+                FunctionToHighlight = 2
+            });
             array = quicksort(array, i, result.i_decrec - 1);
+
+            //Save the state to highlight the 1 function
+            StatesList.Add(new QuickSortState()
+            {
+                State = 5,
+                FunctionToHighlight = 3
+            });
             array = quicksort(array, result.i_decrec + 1, j);
         }
         return array;
@@ -429,6 +464,13 @@ public class QuickSort : MonoBehaviour
                 StartCoroutine(WaitTimeHighlightElementCorrectPosition(StopSeconds,false));
             }
 
+            //Highlight calls in the mergesort function
+            if (StatesList[StepCounter].State == 5)
+            {
+                //Routine that waits for time and highlights the text of the running code
+                StartCoroutine(WaitTimeHighlightFunction(StopSeconds, false));
+            }
+
             StepCounter += 1;
         }
 
@@ -449,7 +491,7 @@ public class QuickSort : MonoBehaviour
                         //If state is highlight pivot
                         if (StatesList[StepCounter].State == 0)
                         {
-                            CodeImage.sprite = SpriteCodePivot0;
+                            CodeImagePivote.sprite = SpriteCodePivotePivot0;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlightPivot(0,false,true));
                         }
@@ -457,7 +499,7 @@ public class QuickSort : MonoBehaviour
                         //If state is highlight Left Half Element
                         if (StatesList[StepCounter].State == 1)
                         {
-                            CodeImage.sprite = SpriteCodeLeftHalf1;
+                            CodeImagePivote.sprite = SpriteCodePivoteLeftHalf1;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlight(0,LeftHalfColor,true));
                         }
@@ -465,7 +507,7 @@ public class QuickSort : MonoBehaviour
                         //If state is highlight Right Half Element
                         if (StatesList[StepCounter].State == 2)
                         {
-                            CodeImage.sprite = SpriteCodeRightHalf2;
+                            CodeImagePivote.sprite = SpriteCodePivoteRightHalf2;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlight(0,RightHalfColor,true));
                         }
@@ -474,9 +516,9 @@ public class QuickSort : MonoBehaviour
                         if (StatesList[StepCounter].State == 3)
                         {
                             if (StatesList[StepCounter].SwapType == 1)
-                                CodeImage.sprite = SpriteCodeSwap1;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap1;
                             else
-                                CodeImage.sprite = SpriteCodeSwap2;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap2;
 
                             Vector3 PosRight = ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.position;
                             Vector3 PosLeft = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.position;
@@ -498,11 +540,18 @@ public class QuickSort : MonoBehaviour
                         if (StatesList[StepCounter].State == 4)
                         {
                             if (StatesList[StepCounter].SwapType == 1)
-                                CodeImage.sprite = SpriteCodeSwap1;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap1;
                             else
-                                CodeImage.sprite = SpriteCodeSwap2;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap2;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlightElementCorrectPosition(0,true));
+                        }
+
+                        //Highlight calls in the mergesort function
+                        if (StatesList[StepCounter].State == 5)
+                        {
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeHighlightFunction(StopSeconds, true));
                         }
 
                         StepCounter += 1;
@@ -525,7 +574,7 @@ public class QuickSort : MonoBehaviour
                         //If state is highlight pivot
                         if (StatesList[StepCounter].State == 0)
                         {
-                            CodeImage.sprite = SpriteCodePivot0;
+                            CodeImagePivote.sprite = SpriteCodePivotePivot0;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlightPivot(0,true,true));
                         }
@@ -533,7 +582,7 @@ public class QuickSort : MonoBehaviour
                         //If state is highlight Left Half Element
                         if (StatesList[StepCounter].State == 1)
                         {
-                            CodeImage.sprite = SpriteCodeLeftHalf1;
+                            CodeImagePivote.sprite = SpriteCodePivoteLeftHalf1;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlight(0,MainProjectColor,true));
                         }
@@ -541,7 +590,7 @@ public class QuickSort : MonoBehaviour
                         //If state is highlight Right Half Element
                         if (StatesList[StepCounter].State == 2)
                         {
-                            CodeImage.sprite = SpriteCodeRightHalf2;
+                            CodeImagePivote.sprite = SpriteCodePivoteRightHalf2;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlight(0,MainProjectColor,true));
                         }
@@ -550,9 +599,9 @@ public class QuickSort : MonoBehaviour
                         if (StatesList[StepCounter].State == 3)
                         {
                             if (StatesList[StepCounter].SwapType == 1)
-                                CodeImage.sprite = SpriteCodeSwap1;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap1;
                             else
-                                CodeImage.sprite = SpriteCodeSwap2;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap2;
 
                             Vector3 PosRight = ArrayListGraphic[StatesList[StepCounter].RightElementIndex].transform.position;
                             Vector3 PosLeft = ArrayListGraphic[StatesList[StepCounter].LeftElementIndex].transform.position;
@@ -574,11 +623,18 @@ public class QuickSort : MonoBehaviour
                         if (StatesList[StepCounter].State == 4)
                         {
                             if (StatesList[StepCounter].SwapType == 1)
-                                CodeImage.sprite = SpriteCodeSwap1;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap1;
                             else
-                                CodeImage.sprite = SpriteCodeSwap2;
+                                CodeImagePivote.sprite = SpriteCodePivoteSwap2;
                             //Routine that waits for time and highlights the text of the running code
                             StartCoroutine(WaitTimeHighlightElementCorrectPositionStepBack(0));
+                        }
+
+                        //Highlight calls in the mergesort function
+                        if (StatesList[StepCounter].State == 5)
+                        {
+                            //Routine that waits for time and highlights the text of the running code
+                            StartCoroutine(WaitTimeHighlightFunction(StopSeconds, true));
                         }
                     }
                 }
@@ -589,7 +645,8 @@ public class QuickSort : MonoBehaviour
     //Clean the highlighted code
     private void CleanHighLightedCode()
     {
-        CodeImage.sprite = SpriteCodeImage;
+        CodeImagePivote.sprite = SpriteCodePivote;
+        CodeImageQuickSort.sprite = SpriteCodeQuickSort;
     }
 
     //Function that allows animate the permutations of the array
@@ -606,6 +663,33 @@ public class QuickSort : MonoBehaviour
         }
     }
 
+    //Wait time and highlighted the function
+    private IEnumerator WaitTimeHighlightFunction(float waitTime, bool stepMode)
+    {
+        Stopped = false;
+
+        switch (StatesList[StepCounter].FunctionToHighlight)
+        {
+            case 1:
+                CodeImageQuickSort.sprite = SpriteCodeQuickSortPivote;
+                break;
+            case 2:
+                CodeImageQuickSort.sprite = SpriteCodeQuickSort1;
+                break;
+            case 3:
+                CodeImageQuickSort.sprite = SpriteCodeQuickSort2;
+                break;
+        }
+
+        yield return new WaitForSeconds(waitTime);
+
+        if (!stepMode)
+            CodeImageQuickSort.sprite = SpriteCodeQuickSort;
+
+        Stopped = true;
+        ExecutingStep = false;
+    }
+
     //Wait time and highlighted the part of swap elements
     private IEnumerator WaitTimeSwap(float waitTime, bool stepMode)
     {
@@ -614,14 +698,14 @@ public class QuickSort : MonoBehaviour
         int step = StepCounter;
 
         if (StatesList[step].SwapType == 1)
-            CodeImage.sprite = SpriteCodeSwap1;
+            CodeImagePivote.sprite = SpriteCodePivoteSwap1;
         else
-            CodeImage.sprite = SpriteCodeSwap2;
+            CodeImagePivote.sprite = SpriteCodePivoteSwap2;
 
         yield return new WaitForSeconds(waitTime);
 
         if(!stepMode)
-            CodeImage.sprite = SpriteCodeImage;
+            CodeImagePivote.sprite = SpriteCodePivote;
 
         Stopped = true;
         ExecutingStep = false;
@@ -634,7 +718,7 @@ public class QuickSort : MonoBehaviour
 
         int step = StepCounter;
 
-        CodeImage.sprite = SpriteCodePivot0;
+        CodeImagePivote.sprite = SpriteCodePivotePivot0;
 
         //Highlight Pivot
         if (!stepBack)
@@ -645,7 +729,7 @@ public class QuickSort : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         if(!stepMode)
-            CodeImage.sprite = SpriteCodeImage;
+            CodeImagePivote.sprite = SpriteCodePivote;
 
         Stopped = true;
         ExecutingStep = false;
@@ -698,9 +782,9 @@ public class QuickSort : MonoBehaviour
         int step = StepCounter;
 
         if (StatesList[step].SwapType == 1)
-            CodeImage.sprite = SpriteCodeSwap1;
+            CodeImagePivote.sprite = SpriteCodePivoteSwap1;
         else
-            CodeImage.sprite = SpriteCodeSwap2;
+            CodeImagePivote.sprite = SpriteCodePivoteSwap2;
 
         //Restore colors
         for (int i = 0; i < ArrayListGraphic.Count; i++)
@@ -717,7 +801,7 @@ public class QuickSort : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         if(!stepMode)
-            CodeImage.sprite = SpriteCodeImage;
+            CodeImagePivote.sprite = SpriteCodePivote;
 
         Stopped = true;
         ExecutingStep = false;
@@ -740,14 +824,14 @@ public class QuickSort : MonoBehaviour
 
         //Highlight code
         if(color == LeftHalfColor)
-            CodeImage.sprite = SpriteCodeLeftHalf1;
+            CodeImagePivote.sprite = SpriteCodePivoteLeftHalf1;
         else
-            CodeImage.sprite = SpriteCodeRightHalf2;
+            CodeImagePivote.sprite = SpriteCodePivoteRightHalf2;
 
         yield return new WaitForSeconds(waitTime);
 
         if(!stepMode)
-            CodeImage.sprite = SpriteCodeImage;
+            CodeImagePivote.sprite = SpriteCodePivote;
 
         Stopped = true;
         ExecutingStep = false;
@@ -872,6 +956,7 @@ public class QuickSortState
      * State 2 - Highlight right half
      * State 3 - Swap element
      * State 4 - Highlight sorted number
+     * State 5 - Highlight calls in the quicksort function
      */
 
     public int State;
@@ -890,4 +975,7 @@ public class QuickSortState
     public int SwapType;
 
     public bool NextElements;
+
+    //Number of the function in quicksort to highlight
+    public int FunctionToHighlight;
 }
