@@ -1,3 +1,0 @@
-Para controlar en que direccion crece la barra al cambiar su height es necesario cambiar su pivote manteniendo shift
-
-Bug remarcar elementos Merge Sort
